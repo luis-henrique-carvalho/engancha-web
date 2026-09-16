@@ -114,7 +114,14 @@ export interface Invitation {
 }
 
 // Canais & Mídias
-export type ChannelProvider = 'instagram'
+export type ChannelProvider =
+  | 'instagram'
+  | 'whatsapp'
+  | 'twitter'
+  | 'tiktok'
+  | 'telegram'
+  | 'messenger'
+  | (string & {})
 export type ChannelStatus = 'ACTIVE' | 'ERROR' | 'EXPIRED' | 'REVOKED' | 'DISCONNECTED'
 export type MediaType = 'POST' | 'REEL'
 
@@ -124,6 +131,7 @@ export interface OAuthConnectURL {
 }
 
 export interface OAuthCallbackRequest {
+  provider?: ChannelProvider | string
   code: string
   state: string
 }

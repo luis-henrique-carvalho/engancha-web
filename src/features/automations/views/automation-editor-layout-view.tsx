@@ -219,7 +219,7 @@ export function AutomationEditorLayoutView({
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                Configure cada etapa antes de publicar no Instagram.
+                Configure cada etapa antes de publicar no canal.
               </p>
             </div>
           </div>
@@ -234,7 +234,7 @@ export function AutomationEditorLayoutView({
             <AlertTitle>Alterações não publicadas</AlertTitle>
             <AlertDescription className="text-xs">
               Esta automação está ativa com alterações pendentes de publicação. A versão anterior
-              continua ativa no Instagram até que uma nova versão seja publicada.
+              continua ativa no canal até que uma nova versão seja publicada.
             </AlertDescription>
           </Alert>
         )}

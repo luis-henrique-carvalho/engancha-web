@@ -261,7 +261,7 @@ describe('AutomationEditorLayoutView', () => {
     await expect
       .element(
         getByText(
-          'Esta automação está ativa com alterações pendentes de publicação. A versão anterior continua ativa no Instagram até que uma nova versão seja publicada.',
+          'Esta automação está ativa com alterações pendentes de publicação. A versão anterior continua ativa no canal até que uma nova versão seja publicada.',
         ),
       )
       .toBeInTheDocument()

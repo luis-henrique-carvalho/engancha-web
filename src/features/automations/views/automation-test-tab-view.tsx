@@ -89,7 +89,7 @@ export function AutomationTestTabView({ automationId }: AutomationTestTabViewPro
             <div>
               <CardTitle className="text-base">Automação pausada</CardTitle>
               <CardDescription className="text-xs">
-                As respostas automáticas estão desativadas no Instagram.
+                As respostas automáticas estão desativadas no canal.
               </CardDescription>
             </div>
           </div>

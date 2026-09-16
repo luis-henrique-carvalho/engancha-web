@@ -1,6 +1,7 @@
 import type {
   ChannelConnection,
   ChannelMedia,
+  ChannelProvider,
   OAuthCallbackRequest,
   OAuthConnectURL,
 } from '@/types/api'
@@ -15,8 +16,9 @@ export const ChannelsApi = {
     return apiFetch<ChannelConnection>(`/channels/connections/${id}`)
   },
 
-  getConnectURL(): Promise<OAuthConnectURL> {
-    return apiFetch<OAuthConnectURL>('/channels/connect-url')
+  getConnectURL(provider?: ChannelProvider | string): Promise<OAuthConnectURL> {
+    const query = provider ? `?provider=${encodeURIComponent(provider)}` : ''
+    return apiFetch<OAuthConnectURL>(`/channels/connect-url${query}`)
   },
 
   completeOAuth(data: OAuthCallbackRequest): Promise<ChannelConnection> {

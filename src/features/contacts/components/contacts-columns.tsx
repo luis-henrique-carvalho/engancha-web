@@ -2,7 +2,8 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import type { Contact } from '@/types/api'
-import { Instagram, User as UserIcon } from 'lucide-react'
+import { User as UserIcon } from 'lucide-react'
+import { ChannelIcon } from '@/features/channels/components/channel-icon'
 
 export const contactsColumns: ColumnDef<Contact>[] = [
   {
@@ -39,17 +40,17 @@ export const contactsColumns: ColumnDef<Contact>[] = [
       return (
         <Badge
           variant="outline"
-          className="text-xs flex items-center gap-1 w-fit"
+          className="text-xs flex items-center gap-1.5 w-fit capitalize"
         >
-          <Instagram className="size-3 text-pink-600" />
-          {row.original.provider}
+          <ChannelIcon provider={row.original.provider} className="size-3.5" />
+          {row.original.provider?.toLowerCase()}
         </Badge>
       )
     },
   },
   {
     accessorKey: 'externalUserId',
-    header: 'ID da Meta',
+    header: 'ID Externo',
     cell: ({ row }) => (
       <span className="font-mono text-xs text-muted-foreground">{row.original.externalUserId}</span>
     ),

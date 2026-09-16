@@ -128,7 +128,7 @@ export function DirectMessageStepView({
                   />
                 </FormControl>
                 <FormDescription>
-                  Esta mensagem será enviada no Direct do Instagram para o usuário que interagir com
+                  Esta mensagem privada será enviada diretamente para o usuário que interagir com
                   a publicação.
                 </FormDescription>
                 <FormMessage />

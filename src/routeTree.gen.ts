@@ -27,6 +27,7 @@ import { Route as AuthenticatedAutomationsIndexRouteImport } from './routes/_aut
 import { Route as AuthenticatedAutomationsAutomationIdRouteRouteImport } from './routes/_authenticated/automations/$automationId/route'
 import { Route as AuthenticatedConversationsIndexRouteImport } from './routes/_authenticated/conversations/index'
 import { Route as AuthenticatedConversationsConversationIdRouteImport } from './routes/_authenticated/conversations/$conversationId'
+import { Route as OauthProviderCallbackRouteImport } from './routes/oauth/$provider/callback'
 import { Route as OauthInstagramCallbackRouteImport } from './routes/oauth/instagram/callback'
 import { Route as AuthenticatedAutomationsAutomationIdIndexRouteImport } from './routes/_authenticated/automations/$automationId/index'
 import { Route as AuthenticatedAutomationsAutomationIdActivityRouteImport } from './routes/_authenticated/automations/$automationId/activity'
@@ -132,6 +133,11 @@ const AuthenticatedConversationsConversationIdRoute =
     path: '/conversations/$conversationId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const OauthProviderCallbackRoute = OauthProviderCallbackRouteImport.update({
+  id: '/oauth/$provider/callback',
+  path: '/oauth/$provider/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OauthInstagramCallbackRoute = OauthInstagramCallbackRouteImport.update({
   id: '/oauth/instagram/callback',
   path: '/oauth/instagram/callback',
@@ -214,6 +220,7 @@ export interface FileRoutesByFullPath {
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/automations/$automationId': typeof AuthenticatedAutomationsAutomationIdRouteRouteWithChildren
   '/conversations/$conversationId': typeof AuthenticatedConversationsConversationIdRoute
+  '/oauth/$provider/callback': typeof OauthProviderCallbackRoute
   '/oauth/instagram/callback': typeof OauthInstagramCallbackRoute
   '/automations/': typeof AuthenticatedAutomationsIndexRoute
   '/conversations/': typeof AuthenticatedConversationsIndexRoute
@@ -243,6 +250,7 @@ export interface FileRoutesByTo {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/conversations/$conversationId': typeof AuthenticatedConversationsConversationIdRoute
+  '/oauth/$provider/callback': typeof OauthProviderCallbackRoute
   '/oauth/instagram/callback': typeof OauthInstagramCallbackRoute
   '/automations': typeof AuthenticatedAutomationsIndexRoute
   '/conversations': typeof AuthenticatedConversationsIndexRoute
@@ -275,6 +283,7 @@ export interface FileRoutesById {
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/_authenticated/automations/$automationId': typeof AuthenticatedAutomationsAutomationIdRouteRouteWithChildren
   '/_authenticated/conversations/$conversationId': typeof AuthenticatedConversationsConversationIdRoute
+  '/oauth/$provider/callback': typeof OauthProviderCallbackRoute
   '/oauth/instagram/callback': typeof OauthInstagramCallbackRoute
   '/_authenticated/automations/': typeof AuthenticatedAutomationsIndexRoute
   '/_authenticated/conversations/': typeof AuthenticatedConversationsIndexRoute
@@ -307,6 +316,7 @@ export interface FileRouteTypes {
     | '/auth/verify-email'
     | '/automations/$automationId'
     | '/conversations/$conversationId'
+    | '/oauth/$provider/callback'
     | '/oauth/instagram/callback'
     | '/automations/'
     | '/conversations/'
@@ -336,6 +346,7 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/verify-email'
     | '/conversations/$conversationId'
+    | '/oauth/$provider/callback'
     | '/oauth/instagram/callback'
     | '/automations'
     | '/conversations'
@@ -367,6 +378,7 @@ export interface FileRouteTypes {
     | '/auth/verify-email'
     | '/_authenticated/automations/$automationId'
     | '/_authenticated/conversations/$conversationId'
+    | '/oauth/$provider/callback'
     | '/oauth/instagram/callback'
     | '/_authenticated/automations/'
     | '/_authenticated/conversations/'
@@ -387,6 +399,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   AcceptInvitationRoute: typeof AcceptInvitationRoute
+  OauthProviderCallbackRoute: typeof OauthProviderCallbackRoute
   OauthInstagramCallbackRoute: typeof OauthInstagramCallbackRoute
 }
 
@@ -517,6 +530,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/conversations/$conversationId'
       preLoaderRoute: typeof AuthenticatedConversationsConversationIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/oauth/$provider/callback': {
+      id: '/oauth/$provider/callback'
+      path: '/oauth/$provider/callback'
+      fullPath: '/oauth/$provider/callback'
+      preLoaderRoute: typeof OauthProviderCallbackRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/oauth/instagram/callback': {
       id: '/oauth/instagram/callback'
@@ -694,6 +714,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRouteRoute: AuthRouteRouteWithChildren,
   AcceptInvitationRoute: AcceptInvitationRoute,
+  OauthProviderCallbackRoute: OauthProviderCallbackRoute,
   OauthInstagramCallbackRoute: OauthInstagramCallbackRoute,
 }
 export const routeTree = rootRouteImport

@@ -86,7 +86,7 @@ export function ContentStepView({
   return (
     <AutomationStepSection
       title="Conteúdo"
-      description="Selecione a publicação ou reel do Instagram associado."
+      description="Selecione a publicação, reel ou mídia do canal associado."
     >
       <Form {...form}>
         <form

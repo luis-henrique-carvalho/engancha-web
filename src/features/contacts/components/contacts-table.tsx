@@ -101,17 +101,20 @@ export function ContactsTable({
           <Select
             value={params.provider?.[0] ?? 'ALL'}
             onValueChange={(val) => {
-              const provider = val === 'ALL' ? undefined : [val as 'INSTAGRAM' | 'TIKTOK']
+              const provider = val === 'ALL' ? undefined : [val]
               onParamsChange({ ...params, provider, page: 1 })
             }}
           >
-            <SelectTrigger className="h-9 w-[130px] text-xs">
+            <SelectTrigger className="h-9 w-[140px] text-xs">
               <SelectValue placeholder="Canal" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL">Todos os canais</SelectItem>
-              <SelectItem value="INSTAGRAM">Instagram</SelectItem>
-              <SelectItem value="TIKTOK">TikTok</SelectItem>
+              <SelectItem value="instagram">Instagram</SelectItem>
+              <SelectItem value="whatsapp">WhatsApp</SelectItem>
+              <SelectItem value="twitter">X (Twitter)</SelectItem>
+              <SelectItem value="tiktok">TikTok</SelectItem>
+              <SelectItem value="telegram">Telegram</SelectItem>
             </SelectContent>
           </Select>
 

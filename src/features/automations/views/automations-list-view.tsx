@@ -37,7 +37,7 @@ export function AutomationsListView({
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Automações</h2>
           <p className="text-muted-foreground">
-            Gerencie respostas automáticas a comentários no Instagram.
+            Gerencie respostas automáticas a comentários e interações em seus canais.
           </p>
         </div>
         {onCreateClick && (
