@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { ChannelMedia } from '@/types/api'
+import type { ChannelMedia, CreateAutomationRequest } from '@/types/api'
 
 export function useCreateAutomationFormState() {
   const [selectedConnectionId, setSelectedConnectionId] = useState('')
@@ -20,6 +20,27 @@ export function useCreateAutomationFormState() {
     setStep(1)
   }
 
+  const buildPayload = (): CreateAutomationRequest | null => {
+    if (!selectedConnectionId || !selectedMedia) return null
+    const trimmedName = name.trim()
+    const keywords = keywordsText
+      .split(',')
+      .map((k) => k.trim())
+      .filter(Boolean)
+
+    if (!trimmedName || keywords.length === 0) return null
+
+    return {
+      channelConnectionId: selectedConnectionId,
+      name: trimmedName,
+      externalMediaId: selectedMedia.externalId,
+      mediaType: selectedMedia.mediaType,
+      keywords,
+      publicReplyText: publicReplyText.trim(),
+      privateReplyText: privateReplyText.trim(),
+    }
+  }
+
   return {
     selectedConnectionId,
     setSelectedConnectionId,
@@ -36,5 +57,6 @@ export function useCreateAutomationFormState() {
     step,
     setStep,
     resetForm,
+    buildPayload,
   }
 }

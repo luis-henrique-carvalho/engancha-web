@@ -47,6 +47,7 @@ export function CreateAutomationDialog({
     step,
     setStep,
     channels,
+    selectedChannel,
     loadingChannels,
     mediaList,
     loadingMedia,
@@ -55,6 +56,10 @@ export function CreateAutomationDialog({
     handleNextStep,
     handleCreate,
   } = useCreateAutomationDialog(workspaceId, open, setOpen)
+
+  const dialogTitle = selectedChannel
+    ? `Nova Automação — ${selectedChannel.accountName}`
+    : 'Nova Automação'
 
   return (
     <Dialog
@@ -67,9 +72,9 @@ export function CreateAutomationDialog({
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Nova Automação do Instagram</DialogTitle>
+          <DialogTitle>{dialogTitle}</DialogTitle>
           <DialogDescription>
-            {step === 1 && 'Etapa 1: Selecione a conta do Instagram e o post/reel alvo.'}
+            {step === 1 && 'Etapa 1: Selecione a conta conectada e o conteúdo alvo.'}
             {step === 2 && 'Etapa 2: Defina as palavras-chave de gatilho.'}
             {step === 3 && 'Etapa 3: Configure as respostas pública e privada.'}
           </DialogDescription>

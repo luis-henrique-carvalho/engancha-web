@@ -52,39 +52,23 @@ export function useCreateAutomationDialog(
   }
 
   const handleCreate = () => {
-    if (!formState.selectedConnectionId || !formState.selectedMedia) {
-      toast.error('Selecione um canal e uma mídia.')
+    const payload = formState.buildPayload()
+    if (!payload) {
+      toast.error('Preencha todos os campos obrigatórios.')
       return
     }
-    const name = formState.name.trim()
-    if (!name) {
-      toast.error('Informe um nome para a automação.')
-      return
-    }
-    const keywords = formState.keywordsText
-      .split(',')
-      .map((k) => k.trim())
-      .filter(Boolean)
-
-    if (keywords.length === 0) {
-      toast.error('Informe ao menos uma palavra-chave.')
-      return
-    }
-
-    createMutation.mutate({
-      channelConnectionId: formState.selectedConnectionId,
-      name,
-      externalMediaId: formState.selectedMedia.externalId,
-      mediaType: formState.selectedMedia.mediaType,
-      keywords,
-      publicReplyText: formState.publicReplyText.trim(),
-      privateReplyText: formState.privateReplyText.trim(),
-    })
+    createMutation.mutate(payload)
   }
+
+  const activeChannels = (channelsData?.items ?? []).filter((c) => c.status === 'ACTIVE')
+  const selectedChannel =
+    (channelsData?.items ?? []).find((c) => c.id === formState.selectedConnectionId) ?? null
 
   return {
     ...formState,
-    channels: channelsData?.items ?? [],
+    channels: activeChannels,
+    allChannels: channelsData?.items ?? [],
+    selectedChannel,
     loadingChannels,
     mediaList: mediaData?.items ?? [],
     loadingMedia,
