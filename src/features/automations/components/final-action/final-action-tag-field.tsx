@@ -1,6 +1,6 @@
 import { Tag as TagIcon, Plus } from 'lucide-react'
 import type { TagResponse } from '@engancha/contracts'
-import { normalizeTagName } from '@engancha/contracts'
+import { normalizeTagName } from '@/lib/string-utils'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'

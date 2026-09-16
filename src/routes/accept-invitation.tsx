@@ -1,12 +1,13 @@
-import { useState } from 'react'
-import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
-import { authClient } from '../lib/auth-client'
-import { Button } from '../components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useEffect, useState } from 'react'
+import { Loader2, CheckCircle2, XCircle } from 'lucide-react'
+import { acceptInvitation } from '@/features/workspaces/services/workspace-api'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
 export const Route = createFileRoute('/accept-invitation')({
   validateSearch: (search: Record<string, unknown>) => ({
-    invitationId: typeof search.invitationId === 'string' ? search.invitationId : undefined,
+    invitationId: typeof search.invitationId === 'string' ? search.invitationId : '',
   }),
   component: AcceptInvitationPage,
 })
@@ -14,55 +15,75 @@ export const Route = createFileRoute('/accept-invitation')({
 function AcceptInvitationPage() {
   const { invitationId } = Route.useSearch()
   const navigate = useNavigate()
-  const session = authClient.useSession()
-  const [error, setError] = useState<string>()
-  const [isAccepting, setIsAccepting] = useState(false)
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
+  const [errorMessage, setErrorMessage] = useState('')
 
-  const accept = async () => {
-    if (!invitationId) return
-    setIsAccepting(true)
-    setError(undefined)
-    const result = await authClient.organization.acceptInvitation({ invitationId })
-    if (result.error) {
-      setError(result.error.message ?? 'Não foi possível aceitar este convite.')
-      setIsAccepting(false)
+  useEffect(() => {
+    if (!invitationId) {
+      setStatus('error')
+      setErrorMessage('Identificador do convite não fornecido.')
       return
     }
-    await navigate({ to: '/workspace', replace: true })
-  }
 
-  const unavailable = !invitationId
-  const unauthenticated = !session.isPending && !session.data?.user
+    let cancelled = false
+
+    acceptInvitation(invitationId)
+      .then(() => {
+        if (!cancelled) {
+          setStatus('success')
+          setTimeout(() => {
+            void navigate({ to: '/' })
+          }, 1500)
+        }
+      })
+      .catch((err: any) => {
+        if (!cancelled) {
+          setStatus('error')
+          setErrorMessage(err?.message || 'Não foi possível aceitar o convite.')
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [invitationId, navigate])
 
   return (
-    <main className="flex min-h-svh items-center justify-center bg-background p-6">
+    <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Aceitar convite</CardTitle>
-          <CardDescription>
-            Entre com a conta do mesmo e-mail convidado e confirme o endereço antes de continuar.
-          </CardDescription>
+        <CardHeader className="text-center">
+          <CardTitle>Convite de Workspace</CardTitle>
+          <CardDescription>Processando aceitação de convite</CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-wrap gap-3">
-          {unavailable ? (
-            <p className="text-sm text-destructive">Este link de convite é inválido.</p>
-          ) : null}
-          {error ? <p className="text-sm text-destructive">{error}</p> : null}
-          {unauthenticated ? (
-            <Button asChild>
-              <Link to="/auth/login">Entrar para aceitar</Link>
-            </Button>
-          ) : null}
-          {!unavailable && !unauthenticated ? (
-            <Button
-              onClick={() => void accept()}
-              disabled={session.isPending || isAccepting}
-            >
-              {isAccepting ? 'Aceitando…' : 'Aceitar convite'}
-            </Button>
-          ) : null}
+        <CardContent className="flex flex-col items-center gap-4 py-6 text-center">
+          {status === 'loading' && (
+            <>
+              <Loader2 className="size-10 animate-spin text-primary" />
+              <p className="text-sm text-muted-foreground">Entrando no workspace...</p>
+            </>
+          )}
+          {status === 'success' && (
+            <>
+              <CheckCircle2 className="size-10 text-emerald-600" />
+              <p className="text-sm font-medium">Convite aceito com sucesso!</p>
+              <p className="text-xs text-muted-foreground">Redirecionando para o dashboard...</p>
+            </>
+          )}
+          {status === 'error' && (
+            <>
+              <XCircle className="size-10 text-destructive" />
+              <p className="text-sm text-destructive">{errorMessage}</p>
+              <Button
+                variant="outline"
+                className="mt-2"
+                onClick={() => void navigate({ to: '/' })}
+              >
+                Ir para o início
+              </Button>
+            </>
+          )}
         </CardContent>
       </Card>
-    </main>
+    </div>
   )
 }

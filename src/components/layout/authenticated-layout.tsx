@@ -1,5 +1,5 @@
 import { Outlet } from '@tanstack/react-router'
-import type { ActiveWorkspaceResponse } from '@engancha/contracts'
+import type { ActiveWorkspace } from '@/types/api'
 import { getCookie } from '@/lib/cookies'
 import { cn } from '@/lib/utils'
 import { LayoutProvider } from '@/context/layout-provider'
@@ -12,8 +12,8 @@ import type { User } from './types'
 type AuthenticatedLayoutProps = {
   children?: React.ReactNode
   user: User
-  workspace: ActiveWorkspaceResponse
-  onWorkspaceChange: (workspace: ActiveWorkspaceResponse) => void
+  workspace: ActiveWorkspace
+  onWorkspaceChange: (workspace: ActiveWorkspace) => void
 }
 
 export function AuthenticatedLayout({

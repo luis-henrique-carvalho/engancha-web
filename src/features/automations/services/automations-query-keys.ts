@@ -1,10 +1,10 @@
-import type { AutomationListRequest } from '@engancha/contracts'
+import type { ListAutomationsParams } from './automations-api'
 
 export const automationsKeys = {
   all: ['automations'] as const,
   workspace: (workspaceId: string) => ['workspaces', workspaceId, 'automations'] as const,
   lists: (workspaceId: string) => ['workspaces', workspaceId, 'automations', 'list'] as const,
-  list: (workspaceId: string, params: AutomationListRequest) =>
+  list: (workspaceId: string, params: ListAutomationsParams) =>
     ['workspaces', workspaceId, 'automations', 'list', params] as const,
   details: (workspaceId: string) => ['workspaces', workspaceId, 'automations', 'detail'] as const,
   detail: (workspaceId: string, automationId: string) =>

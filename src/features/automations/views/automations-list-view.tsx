@@ -1,11 +1,11 @@
-import type { AutomationListRequest } from '@engancha/contracts'
 import { AutomationTable, AutomationsPrimaryButtons } from '../components'
 import { useAutomationsList } from '../hooks/use-automations-list'
+import type { ListAutomationsParams } from '../services/automations-api'
 
 export interface AutomationsListViewProps {
   workspaceId: string
-  params: AutomationListRequest
-  onParamsChange: (params: AutomationListRequest) => void
+  params: ListAutomationsParams
+  onParamsChange: (params: ListAutomationsParams) => void
   onCreateClick?: () => void
   isCreating?: boolean
 }

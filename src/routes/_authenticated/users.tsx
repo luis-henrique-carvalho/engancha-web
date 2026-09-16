@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { UsersHeader, UsersView } from '@/features/users/views'
 import { WorkspaceShell } from '@/features/workspaces/workspace-shell'
-import type { WorkspaceMembersListRequest } from '@engancha/contracts'
+import type { ListUsersParams } from '@/features/users/services/users-api'
 
 function selectedValues<T extends string>(value: unknown, allowed: readonly T[]): T[] | undefined {
   const values = Array.isArray(value) ? value : [value]
@@ -12,7 +12,7 @@ function selectedValues<T extends string>(value: unknown, allowed: readonly T[])
 }
 
 export const Route = createFileRoute('/_authenticated/users')({
-  validateSearch: (search: Record<string, unknown>): WorkspaceMembersListRequest => ({
+  validateSearch: (search: Record<string, unknown>): ListUsersParams => ({
     page: typeof search.page === 'number' ? search.page : 1,
     limit: typeof search.limit === 'number' ? search.limit : 20,
     query: typeof search.query === 'string' ? search.query : undefined,

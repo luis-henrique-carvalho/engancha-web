@@ -1,4 +1,4 @@
-import type { ActiveWorkspaceResponse } from '@engancha/contracts'
+import type { ActiveWorkspace } from '@/types/api'
 import { useLayout } from '@/context/layout-provider'
 import {
   Sidebar,
@@ -16,8 +16,8 @@ import type { User } from './types'
 
 type AppSidebarProps = {
   user: User
-  workspace: ActiveWorkspaceResponse
-  onWorkspaceChange: (workspace: ActiveWorkspaceResponse) => void
+  workspace: ActiveWorkspace
+  onWorkspaceChange: (workspace: ActiveWorkspace) => void
 }
 
 export function AppSidebar({ user, workspace, onWorkspaceChange }: AppSidebarProps) {

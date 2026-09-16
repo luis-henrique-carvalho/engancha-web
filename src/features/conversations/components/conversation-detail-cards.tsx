@@ -41,7 +41,7 @@ export function ConversationContactCard({
           <span className="text-xs text-muted-foreground block mb-1">Tags associadas</span>
           {tags.length > 0 ? (
             <div className="flex flex-wrap gap-1">
-              {tags.map((t) => (
+              {tags.map((t: any) => (
                 <Badge
                   key={t.id}
                   variant="secondary"
@@ -95,7 +95,7 @@ export function ConversationEmailCapturesCard({
         </CardTitle>
       </CardHeader>
       <CardContent className="p-4 space-y-3">
-        {captures.map((ec) => (
+        {captures.map((ec: any) => (
           <div
             key={ec.id}
             className="rounded-md border p-3 text-xs space-y-1.5"

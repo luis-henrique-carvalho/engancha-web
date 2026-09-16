@@ -1,24 +1,18 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { ContactsHeader, ContactsListView } from '@/features/contacts/views'
 import { WorkspaceShell } from '@/features/workspaces/workspace-shell'
-import type { ContactListQuery } from '@engancha/contracts'
+import type { ListContactsParams } from '@/features/contacts/services/contacts-api'
 
 export const Route = createFileRoute('/_authenticated/contacts')({
-  validateSearch: (search: Record<string, unknown>): Partial<ContactListQuery> => ({
+  validateSearch: (search: Record<string, unknown>): Partial<ListContactsParams> => ({
     page: typeof search.page === 'number' ? search.page : 1,
     limit: typeof search.limit === 'number' ? search.limit : 20,
     query: typeof search.query === 'string' ? search.query : undefined,
-    provider:
-      search.provider === 'INSTAGRAM' || search.provider === 'TIKTOK'
+    provider: Array.isArray(search.provider)
+      ? (search.provider as string[])
+      : typeof search.provider === 'string'
         ? [search.provider]
-        : Array.isArray(search.provider)
-          ? (search.provider as ('INSTAGRAM' | 'TIKTOK')[])
-          : undefined,
-    leadState:
-      search.leadState === 'LEAD' || search.leadState === 'NOT_LEAD' || search.leadState === 'ALL'
-        ? search.leadState
         : undefined,
-    tagId: typeof search.tagId === 'string' ? search.tagId : undefined,
   }),
   component: ContactsPage,
 })

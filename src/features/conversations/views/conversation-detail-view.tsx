@@ -8,6 +8,7 @@ import { ConfigDrawer } from '@/components/config-drawer'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useConversationDetail } from '../hooks/use-conversation-detail'
+import { useConversationMessages } from '../hooks/use-conversation-messages'
 import { ConversationChat } from '../components/conversation-chat'
 
 export function ConversationDetailHeader() {
@@ -28,8 +29,10 @@ type Props = {
 
 export function ConversationDetailView({ conversationId }: Props) {
   const { data: conversation, isLoading, isError, refetch } = useConversationDetail(conversationId)
+  const { data: messages = [], isLoading: loadingMessages } =
+    useConversationMessages(conversationId)
 
-  if (isLoading) {
+  if (isLoading || loadingMessages) {
     return (
       <div className="flex flex-1 flex-col gap-6 p-4">
         <div className="flex items-center gap-3">
@@ -71,6 +74,9 @@ export function ConversationDetailView({ conversationId }: Props) {
     )
   }
 
+  const contact = conversation.contact
+  const contactName = contact?.username ? `@${contact.username}` : contact?.fullName || 'Contato'
+
   return (
     <div className="flex flex-1 flex-col gap-4 sm:gap-6">
       <div className="flex items-center gap-3">
@@ -85,19 +91,17 @@ export function ConversationDetailView({ conversationId }: Props) {
           </Link>
         </Button>
         <div>
-          <h2 className="text-xl font-bold tracking-tight">
-            Conversa com{' '}
-            {conversation.contact.username
-              ? `@${conversation.contact.username}`
-              : (conversation.contact.name ?? 'Contato')}
-          </h2>
+          <h2 className="text-xl font-bold tracking-tight">Conversa com {contactName}</h2>
           <p className="text-xs text-muted-foreground">
             Iniciada em {new Date(conversation.createdAt).toLocaleDateString('pt-BR')}
           </p>
         </div>
       </div>
 
-      <ConversationChat conversation={conversation} />
+      <ConversationChat
+        conversation={conversation}
+        messages={messages}
+      />
     </div>
   )
 }

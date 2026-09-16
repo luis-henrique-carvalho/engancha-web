@@ -1,5 +1,5 @@
 import type { LinkProps } from '@tanstack/react-router'
-import type { ActiveWorkspaceResponse } from '@engancha/contracts'
+import type { ActiveWorkspace } from '@/types/api'
 
 type User = {
   name: string
@@ -32,7 +32,7 @@ type NavGroup = {
 
 type SidebarData = {
   user: User
-  workspace: ActiveWorkspaceResponse
+  workspace: ActiveWorkspace
   navGroups: NavGroup[]
 }
 

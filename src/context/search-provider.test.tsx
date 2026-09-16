@@ -28,26 +28,19 @@ async function renderWithSearchProvider() {
   return await render(<SearchProvider>{null}</SearchProvider>)
 }
 
-async function openCommandPalette(
-  screen: RenderResult,
-  modifier: ShortcutModifier = 'Control'
-) {
+async function openCommandPalette(screen: RenderResult, modifier: ShortcutModifier = 'Control') {
   await vi.waitFor(
     async () => {
       const isCommandPaletteOpen =
-        document.querySelector(
-          `[placeholder="${COMMAND_MENU_PLACEHOLDER}"]`
-        ) !== null
+        document.querySelector(`[placeholder="${COMMAND_MENU_PLACEHOLDER}"]`) !== null
 
       if (!isCommandPaletteOpen) {
         await userEvent.keyboard(`{${modifier}>}k{/${modifier}}`)
       }
 
-      await expect
-        .element(screen.getByPlaceholder(COMMAND_MENU_PLACEHOLDER))
-        .toBeInTheDocument()
+      await expect.element(screen.getByPlaceholder(COMMAND_MENU_PLACEHOLDER)).toBeInTheDocument()
     },
-    { interval: 50, timeout: 5000 }
+    { interval: 50, timeout: 5000 },
   )
 }
 
@@ -62,9 +55,7 @@ describe('SearchProvider and CommandMenu', () => {
 
     await openCommandPalette(screen)
 
-    await expect
-      .element(getByPlaceholder(COMMAND_MENU_PLACEHOLDER))
-      .toBeInTheDocument()
+    await expect.element(getByPlaceholder(COMMAND_MENU_PLACEHOLDER)).toBeInTheDocument()
     await expect.element(getByText('Theme')).toBeInTheDocument()
     await expect.element(getByText('Light')).toBeInTheDocument()
     await expect.element(getByText('Dark')).toBeInTheDocument()
@@ -75,30 +66,21 @@ describe('SearchProvider and CommandMenu', () => {
   it('does not show the dialog content when search is closed', async () => {
     const { getByPlaceholder } = await renderWithSearchProvider()
 
-    await expect
-      .element(getByPlaceholder(COMMAND_MENU_PLACEHOLDER))
-      .not.toBeInTheDocument()
+    await expect.element(getByPlaceholder(COMMAND_MENU_PLACEHOLDER)).not.toBeInTheDocument()
   })
 
   it.each([
     ['Ctrl', 'Control'],
     ['Cmd', 'Meta'],
-  ] as const)(
-    'opens the command menu when %s + K is pressed',
-    async (_label, modifier) => {
-      const screen = await renderWithSearchProvider()
+  ] as const)('opens the command menu when %s + K is pressed', async (_label, modifier) => {
+    const screen = await renderWithSearchProvider()
 
-      await expect
-        .element(screen.getByPlaceholder(COMMAND_MENU_PLACEHOLDER))
-        .not.toBeInTheDocument()
+    await expect.element(screen.getByPlaceholder(COMMAND_MENU_PLACEHOLDER)).not.toBeInTheDocument()
 
-      await openCommandPalette(screen, modifier)
+    await openCommandPalette(screen, modifier)
 
-      await expect
-        .element(screen.getByPlaceholder(COMMAND_MENU_PLACEHOLDER))
-        .toBeInTheDocument()
-    }
-  )
+    await expect.element(screen.getByPlaceholder(COMMAND_MENU_PLACEHOLDER)).toBeInTheDocument()
+  })
 
   it('navigates to workspace and closes the palette when Workspace is selected', async () => {
     const screen = await renderWithSearchProvider()
@@ -108,9 +90,7 @@ describe('SearchProvider and CommandMenu', () => {
     await userEvent.click(screen.getByText('Workspace'))
 
     expect(mocks.navigate).toHaveBeenCalledWith({ to: '/workspace' })
-    await expect
-      .element(screen.getByPlaceholder(COMMAND_MENU_PLACEHOLDER))
-      .not.toBeInTheDocument()
+    await expect.element(screen.getByPlaceholder(COMMAND_MENU_PLACEHOLDER)).not.toBeInTheDocument()
   })
 
   it('applies theme and closes the palette when a theme command is chosen', async () => {
@@ -121,9 +101,7 @@ describe('SearchProvider and CommandMenu', () => {
     await userEvent.click(screen.getByText('Dark'))
 
     expect(mocks.setTheme).toHaveBeenCalledWith('dark')
-    await expect
-      .element(screen.getByPlaceholder(COMMAND_MENU_PLACEHOLDER))
-      .not.toBeInTheDocument()
+    await expect.element(screen.getByPlaceholder(COMMAND_MENU_PLACEHOLDER)).not.toBeInTheDocument()
   })
 
   it('shows empty state when the filter matches nothing', async () => {
@@ -131,13 +109,8 @@ describe('SearchProvider and CommandMenu', () => {
 
     await openCommandPalette(screen)
 
-    await userEvent.fill(
-      screen.getByPlaceholder(COMMAND_MENU_PLACEHOLDER),
-      'zzzz-no-match-xxxx'
-    )
+    await userEvent.fill(screen.getByPlaceholder(COMMAND_MENU_PLACEHOLDER), 'zzzz-no-match-xxxx')
 
-    await expect
-      .element(screen.getByText('No results found.'))
-      .toBeInTheDocument()
+    await expect.element(screen.getByText('No results found.')).toBeInTheDocument()
   })
 })

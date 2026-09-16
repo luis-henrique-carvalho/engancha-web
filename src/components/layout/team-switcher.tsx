@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Building2, ChevronsUpDown, Loader2, Plus } from 'lucide-react'
-import type { ActiveWorkspaceResponse } from '@engancha/contracts'
+import type { ActiveWorkspace } from '@/types/api'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,7 +27,6 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 
-import { authClient } from '@/lib/auth-client'
 import {
   createWorkspace as createWorkspaceApi,
   listWorkspaces,
@@ -37,8 +36,8 @@ import {
 import { CompactPagination } from '@/components/data-table/pagination'
 
 type TeamSwitcherProps = {
-  workspace: ActiveWorkspaceResponse
-  onWorkspaceChange: (workspace: ActiveWorkspaceResponse) => void
+  workspace: ActiveWorkspace
+  onWorkspaceChange: (workspace: ActiveWorkspace) => void
 }
 
 export function TeamSwitcher({ workspace, onWorkspaceChange }: TeamSwitcherProps) {
@@ -52,9 +51,8 @@ export function TeamSwitcher({ workspace, onWorkspaceChange }: TeamSwitcherProps
     queryFn: () => listWorkspaces({ page, limit: 10 }),
   })
   const switchWorkspace = useMutation({
-    mutationFn: async (organizationId: string) => {
-      await authClient.organization.setActive({ organizationId }).catch(() => {})
-      return setActiveWorkspaceApi(organizationId)
+    mutationFn: async (workspaceId: string) => {
+      return setActiveWorkspaceApi(workspaceId)
     },
     onSuccess: async (nextWorkspace) => {
       onWorkspaceChange(nextWorkspace)
@@ -63,9 +61,7 @@ export function TeamSwitcher({ workspace, onWorkspaceChange }: TeamSwitcherProps
   })
   const createWorkspace = useMutation({
     mutationFn: async (workspaceName: string) => {
-      const created = await createWorkspaceApi(workspaceName)
-      await authClient.organization.setActive({ organizationId: created.id }).catch(() => {})
-      return created
+      return createWorkspaceApi(workspaceName)
     },
     onSuccess: async (created) => {
       onWorkspaceChange(created)

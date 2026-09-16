@@ -1,8 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
-import type { ContactListQuery } from '@engancha/contracts'
-import { ContactsApi, contactsQueryKeys } from '../services/contacts-api'
+import { ContactsApi, contactsQueryKeys, type ListContactsParams } from '../services/contacts-api'
 
-export function useContactsList(query?: Partial<ContactListQuery>) {
+export function useContactsList(query?: Partial<ListContactsParams>) {
   return useQuery({
     queryKey: contactsQueryKeys.list(query),
     queryFn: () => ContactsApi.list(query),

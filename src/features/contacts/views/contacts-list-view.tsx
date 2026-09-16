@@ -3,7 +3,7 @@ import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { ProfileDropdown } from '@/components/profile-dropdown'
-import type { ContactListQuery } from '@engancha/contracts'
+import type { ListContactsParams } from '../services/contacts-api'
 import { useContactsList } from '../hooks/use-contacts-list'
 import { ContactsTable } from '../components/contacts-table'
 
@@ -20,8 +20,8 @@ export function ContactsHeader() {
 
 type Props = {
   workspaceId: string
-  params: Partial<ContactListQuery>
-  onParamsChange: (params: Partial<ContactListQuery>) => void
+  params: Partial<ListContactsParams>
+  onParamsChange: (params: Partial<ListContactsParams>) => void
 }
 
 export function ContactsListView({ params, onParamsChange }: Props) {

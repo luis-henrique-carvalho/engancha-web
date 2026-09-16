@@ -1,4 +1,4 @@
-import type { AutomationStatus } from '@engancha/contracts'
+import type { AutomationStatus } from '@/types/api'
 
 export interface AutomationStatusConfig {
   label: string

@@ -23,17 +23,13 @@ async function renderConfigDrawer({
           </SidebarProvider>
         </LayoutProvider>
       </ThemeProvider>
-    </DirectionProvider>
+    </DirectionProvider>,
   )
 }
 
 async function openDrawer() {
-  await userEvent.click(
-    page.getByRole('button', { name: /^Open theme settings$/i })
-  )
-  await expect
-    .element(page.getByRole('dialog', { name: /theme settings/i }))
-    .toBeInTheDocument()
+  await userEvent.click(page.getByRole('button', { name: /^Open theme settings$/i }))
+  await expect.element(page.getByRole('dialog', { name: /theme settings/i })).toBeInTheDocument()
 }
 
 describe('ConfigDrawer (integration)', () => {
@@ -59,7 +55,7 @@ describe('ConfigDrawer (integration)', () => {
       .element(
         page.getByRole('button', {
           name: /reset all settings to default values/i,
-        })
+        }),
       )
       .toBeInTheDocument()
   })
@@ -93,9 +89,7 @@ describe('ConfigDrawer (integration)', () => {
       await renderConfigDrawer()
       await openDrawer()
 
-      await userEvent.click(
-        page.getByRole('radio', { name: /select right to left/i })
-      )
+      await userEvent.click(page.getByRole('radio', { name: /select right to left/i }))
 
       await vi.waitFor(() => expect(getCookie('dir')).toBe('rtl'))
       expect(document.documentElement.getAttribute('dir')).toBe('rtl')
@@ -107,9 +101,7 @@ describe('ConfigDrawer (integration)', () => {
       await renderConfigDrawer()
       await openDrawer()
 
-      await userEvent.click(
-        page.getByRole('radio', { name: /select left to right/i })
-      )
+      await userEvent.click(page.getByRole('radio', { name: /select left to right/i }))
 
       await vi.waitFor(() => expect(getCookie('dir')).toBe('ltr'))
       expect(document.documentElement.getAttribute('dir')).toBe('ltr')
@@ -121,28 +113,18 @@ describe('ConfigDrawer (integration)', () => {
       await renderConfigDrawer()
       await openDrawer()
 
-      await userEvent.click(
-        page.getByRole('radio', { name: /select floating/i })
-      )
-      await vi.waitFor(() =>
-        expect(getCookie('layout_variant')).toBe('floating')
-      )
+      await userEvent.click(page.getByRole('radio', { name: /select floating/i }))
+      await vi.waitFor(() => expect(getCookie('layout_variant')).toBe('floating'))
     })
 
     it('selecting inset updates layout_variant cookie after another variant', async () => {
       await renderConfigDrawer()
       await openDrawer()
 
-      await userEvent.click(
-        page.getByRole('radio', { name: /select floating/i })
-      )
-      await vi.waitFor(() =>
-        expect(getCookie('layout_variant')).toBe('floating')
-      )
+      await userEvent.click(page.getByRole('radio', { name: /select floating/i }))
+      await vi.waitFor(() => expect(getCookie('layout_variant')).toBe('floating'))
 
-      await userEvent.click(
-        page.getByRole('radio', { name: /select inset/i })
-      )
+      await userEvent.click(page.getByRole('radio', { name: /select inset/i }))
       await vi.waitFor(() => expect(getCookie('layout_variant')).toBe('inset'))
     })
   })
@@ -151,12 +133,8 @@ describe('ConfigDrawer (integration)', () => {
     await renderConfigDrawer({ sidebarDefaultOpen: true })
     await openDrawer()
 
-    await userEvent.click(
-      page.getByRole('radio', { name: /select full layout/i })
-    )
-    await vi.waitFor(() =>
-      expect(getCookie('layout_collapsible')).toBe('offcanvas')
-    )
+    await userEvent.click(page.getByRole('radio', { name: /select full layout/i }))
+    await vi.waitFor(() => expect(getCookie('layout_collapsible')).toBe('offcanvas'))
     await vi.waitFor(() => expect(getCookie('sidebar_state')).toBe('false'))
   })
 
@@ -171,7 +149,7 @@ describe('ConfigDrawer (integration)', () => {
       await userEvent.click(
         page.getByRole('button', {
           name: /reset theme preference to default/i,
-        })
+        }),
       )
       await vi.waitFor(() => expect(getCookie('vite-ui-theme')).toBe('system'))
     })
@@ -180,17 +158,13 @@ describe('ConfigDrawer (integration)', () => {
       await renderConfigDrawer()
       await openDrawer()
 
-      await userEvent.click(
-        page.getByRole('radio', { name: /select floating/i })
-      )
-      await vi.waitFor(() =>
-        expect(getCookie('layout_variant')).toBe('floating')
-      )
+      await userEvent.click(page.getByRole('radio', { name: /select floating/i }))
+      await vi.waitFor(() => expect(getCookie('layout_variant')).toBe('floating'))
 
       await userEvent.click(
         page.getByRole('button', {
           name: /reset sidebar style to default/i,
-        })
+        }),
       )
       await vi.waitFor(() => expect(getCookie('layout_variant')).toBe('inset'))
     })
@@ -200,13 +174,9 @@ describe('ConfigDrawer (integration)', () => {
     await renderConfigDrawer()
     await openDrawer()
 
-    await userEvent.click(
-      page.getByRole('radio', { name: /select compact/i })
-    )
+    await userEvent.click(page.getByRole('radio', { name: /select compact/i }))
 
-    await vi.waitFor(() =>
-      expect(getCookie('layout_collapsible')).toBe('icon')
-    )
+    await vi.waitFor(() => expect(getCookie('layout_collapsible')).toBe('icon'))
     await vi.waitFor(() => expect(getCookie('sidebar_state')).toBe('false'))
   })
 
@@ -215,20 +185,14 @@ describe('ConfigDrawer (integration)', () => {
     await openDrawer()
 
     await userEvent.click(page.getByRole('radio', { name: /select dark/i }))
-    await userEvent.click(
-      page.getByRole('radio', { name: /select right to left/i })
-    )
-    await userEvent.click(
-      page.getByRole('radio', { name: /select floating/i })
-    )
-    await userEvent.click(
-      page.getByRole('radio', { name: /select compact/i })
-    )
+    await userEvent.click(page.getByRole('radio', { name: /select right to left/i }))
+    await userEvent.click(page.getByRole('radio', { name: /select floating/i }))
+    await userEvent.click(page.getByRole('radio', { name: /select compact/i }))
 
     await userEvent.click(
       page.getByRole('button', {
         name: /reset all settings to default values/i,
-      })
+      }),
     )
 
     await vi.waitFor(() => expect(getCookie('vite-ui-theme')).toBeUndefined())

@@ -7,11 +7,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import type { ColumnFiltersState, PaginationState } from '@tanstack/react-table'
-import type {
-  AutomationListRequest,
-  AutomationResponse,
-  AutomationStatus,
-} from '@engancha/contracts'
+import type { Automation, AutomationStatus } from '@/types/api'
 import { DataTablePagination, DataTableToolbar } from '@/components/data-table'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
@@ -25,10 +21,10 @@ import {
 import { createAutomationColumns } from './automation-columns'
 import { automationStatusOptions } from '../../data/automation-status-options'
 
-type Filters = Pick<AutomationListRequest, 'query' | 'status'>
+type Filters = { query?: string; status?: AutomationStatus[] }
 
 interface AutomationTableProps {
-  data: AutomationResponse[]
+  data: Automation[]
   workspaceId?: string
   isLoading?: boolean
   meta: { page: number; limit: number; total: number; totalPages: number }
@@ -73,8 +69,7 @@ export function AutomationTable({
     onColumnFiltersChange: (next) => {
       const resolved = typeof next === 'function' ? next(columnFilters) : next
       const status = resolved.find((f) => f.id === 'status')?.value as
-        | AutomationStatus[]
-        | undefined
+        AutomationStatus[] | undefined
       onFiltersChange({
         ...filters,
         status: status?.length ? status : undefined,

@@ -32,7 +32,7 @@ export function ContentPicker({
     if (!search.trim()) return items
     const query = search.toLowerCase()
     return items.filter(
-      (item) =>
+      (item: ContentResponse) =>
         item.title.toLowerCase().includes(query) ||
         item.externalContentId.toLowerCase().includes(query),
     )
@@ -130,7 +130,7 @@ export function ContentPicker({
           className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
           data-testid="content-picker-list"
         >
-          {filteredItems.map((item) => {
+          {filteredItems.map((item: ContentResponse) => {
             const isSelected = value === item.id
 
             return (

@@ -24,20 +24,17 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { DataTablePagination } from '@/components/data-table'
-import type {
-  ConversationListQuery,
-  ConversationSummary,
-  PaginationMeta,
-} from '@engancha/contracts'
+import type { Conversation, PaginationMeta } from '@/types/api'
+import type { ListConversationsParams } from '../services/conversations-api'
 import { conversationsColumns } from './conversations-columns'
 import { MessageSquare, Search } from 'lucide-react'
 
 type Props = {
-  data: ConversationSummary[]
+  data: Conversation[]
   isLoading: boolean
   meta: PaginationMeta
-  params: Partial<ConversationListQuery>
-  onParamsChange: (params: Partial<ConversationListQuery>) => void
+  params: Partial<ListConversationsParams>
+  onParamsChange: (params: Partial<ListConversationsParams>) => void
   onPageChange: (page: number) => void
   onPageSizeChange: (limit: number) => void
 }
@@ -102,23 +99,23 @@ export function ConversationsTable({
 
         <div className="flex items-center gap-2">
           <Select
-            value={params.hasLead === undefined ? 'ALL' : params.hasLead ? 'LEAD' : 'NO_LEAD'}
+            value={params.status?.[0] ?? 'ALL'}
             onValueChange={(val) => {
-              const hasLead = val === 'ALL' ? undefined : val === 'LEAD'
-              onParamsChange({ ...params, hasLead, page: 1 })
+              const status = val === 'ALL' ? undefined : [val as any]
+              onParamsChange({ ...params, status, page: 1 })
             }}
           >
             <SelectTrigger className="h-9 w-[150px] text-xs">
-              <SelectValue placeholder="Filtro de Lead" />
+              <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ALL">Todos os contatos</SelectItem>
-              <SelectItem value="LEAD">Apenas Leads</SelectItem>
-              <SelectItem value="NO_LEAD">Sem Lead</SelectItem>
+              <SelectItem value="ALL">Todos os status</SelectItem>
+              <SelectItem value="OPEN">Aberta</SelectItem>
+              <SelectItem value="CLOSED">Fechada</SelectItem>
             </SelectContent>
           </Select>
 
-          {(params.query || params.hasLead !== undefined) && (
+          {(params.query || params.status?.length) && (
             <Button
               variant="ghost"
               size="sm"
@@ -182,10 +179,7 @@ export function ConversationsTable({
                   <div className="flex flex-col items-center justify-center gap-2">
                     <MessageSquare className="size-6 text-muted-foreground/60" />
                     <span>
-                      {params.query ||
-                      params.hasLead !== undefined ||
-                      params.automationId ||
-                      params.tagId
+                      {params.query || params.status?.length || params.automationId
                         ? 'Nenhuma conversa encontrada para os filtros aplicados.'
                         : 'Nenhuma conversa registrada ainda neste workspace.'}
                     </span>

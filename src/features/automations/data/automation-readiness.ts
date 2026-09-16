@@ -6,12 +6,7 @@ import {
 } from './automation-action-mappers'
 
 export type AutomationStepId =
-  | 'identification'
-  | 'content'
-  | 'keyword'
-  | 'public-reply'
-  | 'direct-message'
-  | 'final-action'
+  'identification' | 'content' | 'keyword' | 'public-reply' | 'direct-message' | 'final-action'
 
 export interface AutomationReadinessItem {
   id: AutomationStepId

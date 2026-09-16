@@ -37,15 +37,14 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLFor
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
     setError('')
-    const result = await authClient.signUp
-      .email({ ...data, callbackURL: webCallbackUrl('/workspace') })
-      .catch(() => ({ error: true }))
-    setIsLoading(false)
-    if ('error' in result && result.error) {
-      setError('Não foi possível criar a conta. Verifique os dados informados.')
-      return
+    try {
+      await authClient.register(data)
+      await navigate({ to: '/' })
+    } catch (err: any) {
+      setError(err?.message || 'Não foi possível criar a conta. Verifique os dados informados.')
+    } finally {
+      setIsLoading(false)
     }
-    await navigate({ to: '/auth/verify-email', search: { email: data.email } })
   }
   return (
     <Form {...form}>

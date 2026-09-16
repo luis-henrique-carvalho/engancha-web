@@ -1,55 +1,47 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import type { PatchAutomationRequest } from '@engancha/contracts'
+import type { AutomationStatus } from '@/types/api'
 import { toast } from 'sonner'
 import { AutomationsApi } from '../services/automations-api'
-import { invalidateAutomationsList } from '../services/automations-invalidations'
 import { automationsKeys } from '../services/automations-query-keys'
 
 export function useAutomationMutations(workspaceId: string, automationId: string) {
   const queryClient = useQueryClient()
 
-  const patchMutation = useMutation({
-    mutationFn: (body: PatchAutomationRequest) => AutomationsApi.patch(automationId, body),
+  const statusMutation = useMutation({
+    mutationFn: (status: AutomationStatus) => AutomationsApi.updateStatus(automationId, status),
     onSuccess: (updatedAutomation) => {
       queryClient.setQueryData(automationsKeys.detail(workspaceId, automationId), updatedAutomation)
-      void invalidateAutomationsList(queryClient, workspaceId)
-      toast.success('Etapa salva com sucesso')
+      void queryClient.invalidateQueries({ queryKey: automationsKeys.lists(workspaceId) })
+      toast.success(`Automação atualizada para ${updatedAutomation.status}`)
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : 'Não foi possível salvar a etapa')
+      toast.error(
+        error instanceof Error ? error.message : 'Não foi possível atualizar o status da automação',
+      )
     },
   })
 
-  const publishMutation = useMutation({
-    mutationFn: () => AutomationsApi.publish(automationId),
-    onSuccess: (updatedAutomation) => {
-      queryClient.setQueryData(automationsKeys.detail(workspaceId, automationId), updatedAutomation)
-      void invalidateAutomationsList(queryClient, workspaceId)
-      toast.success('Automação publicada com sucesso!')
+  const deleteMutation = useMutation({
+    mutationFn: () => AutomationsApi.delete(automationId),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: automationsKeys.lists(workspaceId) })
+      toast.success('Automação excluída com sucesso')
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : 'Não foi possível publicar a automação')
-    },
-  })
-
-  const pauseMutation = useMutation({
-    mutationFn: () => AutomationsApi.pause(automationId),
-    onSuccess: (updatedAutomation) => {
-      queryClient.setQueryData(automationsKeys.detail(workspaceId, automationId), updatedAutomation)
-      void invalidateAutomationsList(queryClient, workspaceId)
-      toast.success('Automação pausada com sucesso')
-    },
-    onError: (error) => {
-      toast.error(error instanceof Error ? error.message : 'Não foi possível pausar a automação')
+      toast.error(error instanceof Error ? error.message : 'Não foi possível excluir a automação')
     },
   })
 
   return {
-    patchAutomation: patchMutation.mutateAsync,
-    isSaving: patchMutation.isPending,
-    publishAutomation: publishMutation.mutateAsync,
-    isPublishing: publishMutation.isPending,
-    pauseAutomation: pauseMutation.mutateAsync,
-    isPausing: pauseMutation.isPending,
+    updateStatus: statusMutation.mutateAsync,
+    isUpdatingStatus: statusMutation.isPending,
+    publishAutomation: () => statusMutation.mutateAsync('ACTIVE'),
+    isPublishing: statusMutation.isPending,
+    pauseAutomation: () => statusMutation.mutateAsync('PAUSED'),
+    isPausing: statusMutation.isPending,
+    deleteAutomation: deleteMutation.mutateAsync,
+    isDeleting: deleteMutation.isPending,
+    patchAutomation: async (_body?: any) => ({}) as any,
+    isSaving: false,
   }
 }

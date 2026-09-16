@@ -1,5 +1,5 @@
 import { useNavigate } from '@tanstack/react-router'
-import type { ActiveWorkspaceResponse } from '@engancha/contracts'
+import type { ActiveWorkspace } from '@/types/api'
 import { authClient } from '@/lib/auth-client'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
@@ -13,7 +13,7 @@ export function WorkspaceShell({
   fixed = false,
   mainClassName = 'gap-6',
 }: {
-  children: (workspace: ActiveWorkspaceResponse) => React.ReactNode
+  children: (workspace: ActiveWorkspace) => React.ReactNode
   header?: React.ReactNode
   fixed?: boolean
   mainClassName?: string

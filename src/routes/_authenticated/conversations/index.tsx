@@ -1,21 +1,23 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { ConversationsHeader, ConversationsListView } from '@/features/conversations/views'
 import { WorkspaceShell } from '@/features/workspaces/workspace-shell'
-import type { ConversationListQuery } from '@engancha/contracts'
+import type { ListConversationsParams } from '@/features/conversations/services/conversations-api'
+import type { ConversationStatus } from '@/types/api'
 
 export const Route = createFileRoute('/_authenticated/conversations/')({
-  validateSearch: (search: Record<string, unknown>): Partial<ConversationListQuery> => ({
+  validateSearch: (search: Record<string, unknown>): Partial<ListConversationsParams> => ({
     page: typeof search.page === 'number' ? search.page : 1,
     limit: typeof search.limit === 'number' ? search.limit : 20,
     query: typeof search.query === 'string' ? search.query : undefined,
-    hasLead:
-      search.hasLead === true || search.hasLead === 'true'
-        ? true
-        : search.hasLead === false || search.hasLead === 'false'
-          ? false
+    status:
+      search.status === 'OPEN' || search.status === 'CLOSED'
+        ? [search.status as ConversationStatus]
+        : Array.isArray(search.status)
+          ? (search.status as ConversationStatus[])
           : undefined,
     automationId: typeof search.automationId === 'string' ? search.automationId : undefined,
-    tagId: typeof search.tagId === 'string' ? search.tagId : undefined,
+    startDate: typeof search.startDate === 'string' ? search.startDate : undefined,
+    endDate: typeof search.endDate === 'string' ? search.endDate : undefined,
   }),
   component: ConversationsPage,
 })

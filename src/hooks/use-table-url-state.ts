@@ -1,17 +1,10 @@
 import { useMemo, useState } from 'react'
-import type {
-  ColumnFiltersState,
-  OnChangeFn,
-  PaginationState,
-} from '@tanstack/react-table'
+import type { ColumnFiltersState, OnChangeFn, PaginationState } from '@tanstack/react-table'
 
 type SearchRecord = Record<string, unknown>
 
 export type NavigateFn = (opts: {
-  search:
-    | true
-    | SearchRecord
-    | ((prev: SearchRecord) => Partial<SearchRecord> | SearchRecord)
+  search: true | SearchRecord | ((prev: SearchRecord) => Partial<SearchRecord> | SearchRecord)
   replace?: boolean
 }) => void
 
@@ -59,10 +52,7 @@ type UseTableUrlStateReturn = {
   pagination: PaginationState
   onPaginationChange: OnChangeFn<PaginationState>
   // Helpers
-  ensurePageInRange: (
-    pageCount: number,
-    opts?: { resetTo?: 'first' | 'last' }
-  ) => void
+  ensurePageInRange: (pageCount: number, opts?: { resetTo?: 'first' | 'last' }) => void
 }
 
 function buildInitialColumnFilters(

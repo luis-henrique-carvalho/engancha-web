@@ -7,7 +7,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import type { ColumnFiltersState, PaginationState } from '@tanstack/react-table'
-import type { WorkspaceMembersListRequest } from '@engancha/contracts'
+import type { ListUsersParams } from '../services/users-api'
 import { DataTablePagination, DataTableToolbar } from '#/components/data-table'
 import { Skeleton } from '#/components/ui/skeleton'
 import {
@@ -26,8 +26,8 @@ type Props = {
   data: User[]
   isLoading: boolean
   meta: { page: number; limit: number; total: number; totalPages: number }
-  filters: Pick<WorkspaceMembersListRequest, 'query' | 'role' | 'status'>
-  onFiltersChange: (filters: Pick<WorkspaceMembersListRequest, 'query' | 'role' | 'status'>) => void
+  filters: Pick<ListUsersParams, 'query' | 'role' | 'status'>
+  onFiltersChange: (filters: Pick<ListUsersParams, 'query' | 'role' | 'status'>) => void
   onPageChange: (page: number) => void
   onPageSizeChange: (limit: number) => void
 }
@@ -63,12 +63,11 @@ export function UsersTable({
       const resolved = typeof next === 'function' ? next(columnFilters) : next
       const role = resolved.find((filter) => filter.id === 'role')?.value as string[] | undefined
       const status = resolved.find((filter) => filter.id === 'status')?.value as
-        | string[]
-        | undefined
+        string[] | undefined
       onFiltersChange({
         ...filters,
-        role: role?.length ? (role as WorkspaceMembersListRequest['role']) : undefined,
-        status: status?.length ? (status as WorkspaceMembersListRequest['status']) : undefined,
+        role: role?.length ? (role as ListUsersParams['role']) : undefined,
+        status: status?.length ? (status as ListUsersParams['status']) : undefined,
       })
     },
     onPaginationChange: (next) => {

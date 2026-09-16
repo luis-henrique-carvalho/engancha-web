@@ -9,13 +9,13 @@ import { UsersProvider } from '../components/users-provider'
 import { UsersTable } from '../components/users-table'
 import { useUsersList } from '../hooks/use-users'
 import { userUiSchema } from '../data/schema'
-import type { WorkspaceMembersListRequest } from '@engancha/contracts'
+import type { ListUsersParams } from '../services/users-api'
 
 type UsersViewProps = {
   canManage: boolean
   workspaceId: string
-  params: WorkspaceMembersListRequest
-  onParamsChange: (params: WorkspaceMembersListRequest) => void
+  params: ListUsersParams
+  onParamsChange: (params: ListUsersParams) => void
 }
 
 export function UsersHeader() {
@@ -52,8 +52,8 @@ export function UsersView({ canManage, workspaceId, params, onParamsChange }: Us
         isLoading={members.isLoading}
         meta={
           members.data?.meta ?? {
-            page: params.page,
-            limit: params.limit,
+            page: params.page ?? 1,
+            limit: params.limit ?? 20,
             total: 0,
             totalPages: 0,
           }

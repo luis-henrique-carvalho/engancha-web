@@ -1,6 +1,6 @@
 import { useRouter } from '@tanstack/react-router'
 import { createContext, useContext, useEffect, useState } from 'react'
-import type { ActiveWorkspaceResponse } from '@engancha/contracts'
+import type { ActiveWorkspace } from '@/types/api'
 import type { User } from '@/components/layout/types'
 import { authClient } from '@/lib/auth-client'
 import { ApiClientError } from '@/lib/api-client'
@@ -10,9 +10,9 @@ type WorkspaceContextValue = {
   error?: ApiClientError | Error
   isLoading: boolean
   retry: () => void
-  setWorkspace: (workspace: ActiveWorkspaceResponse) => void
+  setWorkspace: (workspace: ActiveWorkspace) => void
   user?: User
-  workspace?: ActiveWorkspaceResponse
+  workspace?: ActiveWorkspace
 }
 
 const WorkspaceContext = createContext<WorkspaceContextValue | null>(null)
@@ -20,7 +20,7 @@ const WorkspaceContext = createContext<WorkspaceContextValue | null>(null)
 export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const session = authClient.useSession()
-  const [workspace, setWorkspace] = useState<ActiveWorkspaceResponse>()
+  const [workspace, setWorkspace] = useState<ActiveWorkspace>()
   const [error, setError] = useState<ApiClientError | Error>()
   const [loading, setLoading] = useState(true)
   const [attempt, setAttempt] = useState(0)

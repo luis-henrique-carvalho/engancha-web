@@ -106,7 +106,7 @@ export const leadsColumns: ColumnDef<LeadSummary>[] = [
       if (!tags.length) return <span className="text-xs text-muted-foreground">—</span>
       return (
         <div className="flex flex-wrap gap-1 max-w-[200px]">
-          {tags.map((tag) => (
+          {tags.map((tag: any) => (
             <Badge
               key={tag.id}
               variant="secondary"

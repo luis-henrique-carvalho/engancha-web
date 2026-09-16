@@ -7,10 +7,7 @@ function lastNavigateOpts(navigate: Mock<NavigateFn>) {
   return calls[calls.length - 1]?.[0]
 }
 
-function applyLastSearchFn(
-  navigate: Mock<NavigateFn>,
-  prev: Record<string, unknown>
-) {
+function applyLastSearchFn(navigate: Mock<NavigateFn>, prev: Record<string, unknown>) {
   const opts = lastNavigateOpts(navigate)
   if (!opts) return undefined
   const s = opts.search
@@ -28,7 +25,7 @@ describe('useTableUrlState', () => {
         search: { page: 3, pageSize: 25 },
         navigate,
         pagination: { defaultPage: 1, defaultPageSize: 10 },
-      })
+      }),
     )
 
     expect(result.current.pagination).toEqual({
@@ -44,7 +41,7 @@ describe('useTableUrlState', () => {
         search: {},
         navigate,
         pagination: { defaultPage: 1, defaultPageSize: 10 },
-      })
+      }),
     )
 
     expect(result.current.pagination).toEqual({
@@ -60,7 +57,7 @@ describe('useTableUrlState', () => {
         search: { page: 0 },
         navigate,
         pagination: { defaultPage: 1, defaultPageSize: 10 },
-      })
+      }),
     )
 
     expect(result.current.pagination.pageIndex).toBe(0)
@@ -74,7 +71,7 @@ describe('useTableUrlState', () => {
         search: prev,
         navigate,
         pagination: { defaultPage: 1, defaultPageSize: 10 },
-      })
+      }),
     )
 
     await act(() => {
@@ -99,7 +96,7 @@ describe('useTableUrlState', () => {
         search: { ...prev, page: 1, pageSize: 10 },
         navigate,
         pagination: { defaultPage: 1, defaultPageSize: 10 },
-      })
+      }),
     )
 
     await act(() => {
@@ -128,7 +125,7 @@ describe('useTableUrlState', () => {
           defaultPage: 1,
           defaultPageSize: 10,
         },
-      })
+      }),
     )
 
     expect(result.current.pagination).toEqual({
@@ -145,7 +142,7 @@ describe('useTableUrlState', () => {
         navigate,
         pagination: { defaultPage: 1, defaultPageSize: 10 },
         globalFilter: { enabled: true, key: 'filter' },
-      })
+      }),
     )
 
     expect(result.current.globalFilter).toBe('hello')
@@ -168,7 +165,7 @@ describe('useTableUrlState', () => {
         navigate,
         pagination: { defaultPage: 1, defaultPageSize: 10 },
         globalFilter: { enabled: true, key: 'filter' },
-      })
+      }),
     )
 
     await act(() => {
@@ -188,7 +185,7 @@ describe('useTableUrlState', () => {
         navigate,
         pagination: { defaultPage: 1, defaultPageSize: 10 },
         globalFilter: { enabled: true, key: 'filter', trim: false },
-      })
+      }),
     )
 
     await act(() => {
@@ -208,7 +205,7 @@ describe('useTableUrlState', () => {
         navigate,
         pagination: { defaultPage: 1, defaultPageSize: 10 },
         globalFilter: { enabled: false },
-      })
+      }),
     )
 
     expect(result.current.globalFilter).toBeUndefined()
@@ -226,7 +223,7 @@ describe('useTableUrlState', () => {
           { columnId: 'status', searchKey: 'status', type: 'array' },
           { columnId: 'priority', searchKey: 'priority', type: 'array' },
         ],
-      })
+      }),
     )
 
     expect(result.current.columnFilters).toEqual([
@@ -243,12 +240,10 @@ describe('useTableUrlState', () => {
         navigate,
         pagination: { defaultPage: 1, defaultPageSize: 10 },
         columnFilters: [{ columnId: 'title', searchKey: 'q', type: 'string' }],
-      })
+      }),
     )
 
-    expect(result.current.columnFilters).toEqual([
-      { id: 'title', value: '  find me  ' },
-    ])
+    expect(result.current.columnFilters).toEqual([{ id: 'title', value: '  find me  ' }])
   })
 
   it('onColumnFiltersChange merges serialized filters into search and clears page', async () => {
@@ -263,7 +258,7 @@ describe('useTableUrlState', () => {
           { columnId: 'status', searchKey: 'status', type: 'array' },
           { columnId: 'priority', searchKey: 'priority', type: 'array' },
         ],
-      })
+      }),
     )
 
     await act(() => {
@@ -288,7 +283,7 @@ describe('useTableUrlState', () => {
         search: { page: 5 },
         navigate,
         pagination: { defaultPage: 1, defaultPageSize: 10 },
-      })
+      }),
     )
 
     await act(() => {
@@ -297,12 +292,10 @@ describe('useTableUrlState', () => {
 
     expect(navigate).toHaveBeenCalledTimes(1)
     expect(lastNavigateOpts(navigate)?.replace).toBe(true)
-    expect(applyLastSearchFn(navigate, { page: 5, filter: 'x' })).toMatchObject(
-      {
-        page: undefined,
-        filter: 'x',
-      }
-    )
+    expect(applyLastSearchFn(navigate, { page: 5, filter: 'x' })).toMatchObject({
+      page: undefined,
+      filter: 'x',
+    })
   })
 
   it('ensurePageInRange resets to last page when resetTo is last', async () => {
@@ -312,7 +305,7 @@ describe('useTableUrlState', () => {
         search: { page: 9 },
         navigate,
         pagination: { defaultPage: 1, defaultPageSize: 10 },
-      })
+      }),
     )
 
     await act(() => {
@@ -332,7 +325,7 @@ describe('useTableUrlState', () => {
         search: { page: 2 },
         navigate,
         pagination: { defaultPage: 1, defaultPageSize: 10 },
-      })
+      }),
     )
 
     await act(() => {
@@ -358,12 +351,10 @@ describe('useTableUrlState', () => {
             serialize: (v) => (Array.isArray(v) ? v.join('|') : v),
           },
         ],
-      })
+      }),
     )
 
-    expect(result.current.columnFilters).toEqual([
-      { id: 'tag', value: ['a', 'b'] },
-    ])
+    expect(result.current.columnFilters).toEqual([{ id: 'tag', value: ['a', 'b'] }])
 
     await act(() => {
       result.current.onColumnFiltersChange([{ id: 'tag', value: ['x', 'y'] }])

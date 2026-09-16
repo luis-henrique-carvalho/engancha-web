@@ -1,4 +1,4 @@
-import type { AutomationStatus } from '@engancha/contracts'
+import type { AutomationStatus } from '@/types/api'
 import { AUTOMATION_STATUS_MAP } from './automation-status'
 
 export const automationStatusOptions: {

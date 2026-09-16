@@ -1,5 +1,4 @@
 {
-  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "jsx": "react-jsx",
     "module": "ESNext",
@@ -7,14 +6,16 @@
     "target": "ES2022",
     "baseUrl": ".",
     "skipLibCheck": true,
+    "strict": true,
     "strictNullChecks": true,
     "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
     "types": ["node", "vite/client"],
     "paths": {
       "@/*": ["./src/*"],
-      "#/*": ["./src/*"],
-      "@engancha/contracts": ["../../packages/contracts/src/index.ts"],
-      "@engancha/contracts/*": ["../../packages/contracts/src/*"]
+      "#/*": ["./src/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts", "vitest.config.ts"],

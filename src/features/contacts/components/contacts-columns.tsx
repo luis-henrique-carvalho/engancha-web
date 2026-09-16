@@ -1,121 +1,75 @@
 import type { ColumnDef } from '@tanstack/react-table'
 import { Badge } from '@/components/ui/badge'
-import type { ContactSummary } from '@engancha/contracts'
-import { Mail, Tag as TagIcon } from 'lucide-react'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import type { Contact } from '@/types/api'
+import { Instagram, User as UserIcon } from 'lucide-react'
 
-export const contactsColumns: ColumnDef<ContactSummary>[] = [
+export const contactsColumns: ColumnDef<Contact>[] = [
   {
     accessorKey: 'identity',
     header: 'Identidade Social',
     cell: ({ row }) => {
       const contact = row.original
-      const displayName = contact.username ? `@${contact.username}` : (contact.name ?? contact.id)
+      const displayName = contact.username ? `@${contact.username}` : contact.fullName || contact.id
       return (
-        <div className="flex flex-col">
-          <span className="font-semibold text-foreground">{displayName}</span>
-          {contact.name && contact.username && (
-            <span className="text-xs text-muted-foreground">{contact.name}</span>
-          )}
-        </div>
-      )
-    },
-  },
-  {
-    accessorKey: 'email',
-    header: 'E-mail Capturado',
-    cell: ({ row }) => {
-      const email = row.original.email
-      if (!email) {
-        return <span className="text-xs text-muted-foreground italic">Pendente de captura</span>
-      }
-      return (
-        <div className="flex items-center gap-1.5 text-sm text-foreground">
-          <Mail className="size-3.5 text-muted-foreground" />
-          <span>{email}</span>
+        <div className="flex items-center gap-3">
+          <Avatar className="size-8">
+            <AvatarImage
+              src={contact.profilePicUrl}
+              alt={displayName}
+            />
+            <AvatarFallback>
+              <UserIcon className="size-4" />
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col">
+            <span className="font-semibold text-foreground">{displayName}</span>
+            {contact.fullName && contact.username && (
+              <span className="text-xs text-muted-foreground">{contact.fullName}</span>
+            )}
+          </div>
         </div>
       )
     },
   },
   {
     accessorKey: 'provider',
-    header: 'Origem',
+    header: 'Canal',
     cell: ({ row }) => {
-      const { provider, mode } = row.original
       return (
-        <div className="flex items-center gap-1.5">
-          <Badge
-            variant="outline"
-            className="text-xs"
-          >
-            {provider}
-          </Badge>
-          {mode === 'SIMULATED' && (
-            <Badge
-              variant="secondary"
-              className="text-[10px]"
-            >
-              Simulado
-            </Badge>
-          )}
-        </div>
+        <Badge
+          variant="outline"
+          className="text-xs flex items-center gap-1 w-fit"
+        >
+          <Instagram className="size-3 text-pink-600" />
+          {row.original.provider}
+        </Badge>
       )
     },
   },
   {
-    accessorKey: 'leadState',
-    header: 'Estado de Lead',
-    cell: ({ row }) => {
-      const { isLead, lead } = row.original
-      if (!isLead || !lead) {
-        return <span className="text-xs text-muted-foreground">Contato</span>
-      }
-      return (
-        <div className="flex flex-col">
-          <Badge
-            variant="default"
-            className="bg-emerald-600 hover:bg-emerald-700 text-[11px] w-fit"
-          >
-            Lead Convertido
-          </Badge>
-          <span className="text-[10px] text-muted-foreground mt-0.5">
-            Desde {new Date(lead.capturedAt).toLocaleDateString('pt-BR')}
-          </span>
-        </div>
-      )
-    },
+    accessorKey: 'externalUserId',
+    header: 'ID da Meta',
+    cell: ({ row }) => (
+      <span className="font-mono text-xs text-muted-foreground">{row.original.externalUserId}</span>
+    ),
   },
   {
-    accessorKey: 'tags',
-    header: 'Tags',
-    cell: ({ row }) => {
-      const tags = row.original.tags
-      if (!tags.length) return <span className="text-xs text-muted-foreground">—</span>
-      return (
-        <div className="flex flex-wrap gap-1 max-w-[200px]">
-          {tags.map((tag) => (
-            <Badge
-              key={tag.id}
-              variant="secondary"
-              className="text-[10px] gap-1 px-1.5 py-0.5"
-            >
-              <TagIcon className="size-2.5" />
-              {tag.name}
-            </Badge>
-          ))}
-        </div>
-      )
-    },
+    accessorKey: 'createdAt',
+    header: 'Primeiro Contato',
+    cell: ({ row }) => (
+      <span className="text-xs text-muted-foreground">
+        {new Date(row.original.createdAt).toLocaleString('pt-BR')}
+      </span>
+    ),
   },
   {
-    accessorKey: 'lastInteractionAt',
-    header: 'Última Interação',
-    cell: ({ row }) => {
-      const date = row.original.lastInteractionAt ?? row.original.createdAt
-      return (
-        <span className="text-xs text-muted-foreground">
-          {new Date(date).toLocaleString('pt-BR')}
-        </span>
-      )
-    },
+    accessorKey: 'updatedAt',
+    header: 'Última Atividade',
+    cell: ({ row }) => (
+      <span className="text-xs text-muted-foreground">
+        {new Date(row.original.updatedAt).toLocaleString('pt-BR')}
+      </span>
+    ),
   },
 ]

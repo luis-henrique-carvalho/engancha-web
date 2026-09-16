@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { useNavigate } from '@tanstack/react-router'
-import { Edit, Eye, MoreHorizontal, Pause } from 'lucide-react'
-import type { AutomationResponse } from '@engancha/contracts'
+import { Play, MoreHorizontal, Pause, Trash2 } from 'lucide-react'
+import type { Automation } from '@/types/api'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,21 +12,29 @@ import {
 import { useAutomationMutations } from '../../hooks/use-automation-mutations'
 
 interface AutomationRowActionsProps {
-  automation: AutomationResponse
+  automation: Automation
   workspaceId?: string
 }
 
 export function AutomationRowActions({ automation, workspaceId = '' }: AutomationRowActionsProps) {
-  const navigate = useNavigate()
   const [isPauseDialogOpen, setIsPauseDialogOpen] = useState(false)
-  const { pauseAutomation, isPausing } = useAutomationMutations(workspaceId, automation.id)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const { updateStatus, isUpdatingStatus, deleteAutomation, isDeleting } = useAutomationMutations(
+    workspaceId,
+    automation.id,
+  )
 
-  const isArchived = automation.status === 'ARCHIVED'
   const isActive = automation.status === 'ACTIVE'
+  const isPaused = automation.status === 'PAUSED' || automation.status === 'DRAFT'
 
-  const handleConfirmPause = async () => {
-    await pauseAutomation()
+  const handleToggleStatus = async () => {
+    await updateStatus(isActive ? 'PAUSED' : 'ACTIVE')
     setIsPauseDialogOpen(false)
+  }
+
+  const handleDelete = async () => {
+    await deleteAutomation()
+    setIsDeleteDialogOpen(false)
   }
 
   return (
@@ -46,31 +53,7 @@ export function AutomationRowActions({ automation, workspaceId = '' }: Automatio
           align="end"
           className="w-[160px]"
         >
-          {!isArchived && (
-            <DropdownMenuItem
-              onClick={() => {
-                void navigate({
-                  to: '/automations/$automationId/identification',
-                  params: { automationId: automation.id },
-                })
-              }}
-            >
-              <Edit className="mr-2 size-4" />
-              Editar
-            </DropdownMenuItem>
-          )}
-          <DropdownMenuItem
-            onClick={() => {
-              void navigate({
-                to: '/automations/$automationId/review',
-                params: { automationId: automation.id },
-              })
-            }}
-          >
-            <Eye className="mr-2 size-4" />
-            Revisar
-          </DropdownMenuItem>
-          {isActive && (
+          {isActive ? (
             <DropdownMenuItem
               onClick={() => setIsPauseDialogOpen(true)}
               data-testid="automation-pause-action"
@@ -78,7 +61,23 @@ export function AutomationRowActions({ automation, workspaceId = '' }: Automatio
               <Pause className="mr-2 size-4" />
               Pausar
             </DropdownMenuItem>
+          ) : (
+            <DropdownMenuItem
+              onClick={() => void updateStatus('ACTIVE')}
+              disabled={isUpdatingStatus}
+              data-testid="automation-activate-action"
+            >
+              <Play className="mr-2 size-4" />
+              Ativar
+            </DropdownMenuItem>
           )}
+          <DropdownMenuItem
+            onClick={() => setIsDeleteDialogOpen(true)}
+            className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+          >
+            <Trash2 className="mr-2 size-4" />
+            Excluir
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -90,8 +89,20 @@ export function AutomationRowActions({ automation, workspaceId = '' }: Automatio
         confirmText="Pausar"
         cancelBtnText="Cancelar"
         destructive
-        isLoading={isPausing}
-        handleConfirm={handleConfirmPause}
+        isLoading={isUpdatingStatus}
+        handleConfirm={handleToggleStatus}
+      />
+
+      <ConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        title="Excluir automação"
+        desc="Tem certeza que deseja excluir esta automação? Esta ação não pode ser desfeita."
+        confirmText="Excluir"
+        cancelBtnText="Cancelar"
+        destructive
+        isLoading={isDeleting}
+        handleConfirm={handleDelete}
       />
     </>
   )

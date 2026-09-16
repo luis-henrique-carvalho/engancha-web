@@ -3,7 +3,7 @@ import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { ProfileDropdown } from '@/components/profile-dropdown'
-import type { ConversationListQuery } from '@engancha/contracts'
+import type { ListConversationsParams } from '../services/conversations-api'
 import { useConversationsList } from '../hooks/use-conversations-list'
 import { ConversationsTable } from '../components/conversations-table'
 
@@ -20,8 +20,8 @@ export function ConversationsHeader() {
 
 type Props = {
   workspaceId: string
-  params: Partial<ConversationListQuery>
-  onParamsChange: (params: Partial<ConversationListQuery>) => void
+  params: Partial<ListConversationsParams>
+  onParamsChange: (params: Partial<ListConversationsParams>) => void
 }
 
 export function ConversationsListView({ params, onParamsChange }: Props) {

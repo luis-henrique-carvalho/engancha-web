@@ -1,8 +1,7 @@
 import type { AutomationAction } from '@engancha/contracts'
 
 export type FinalAutomationAction =
-  | (AutomationAction & { type: 'LINK' })
-  | (AutomationAction & { type: 'CAPTURE_EMAIL' })
+  (AutomationAction & { type: 'LINK' }) | (AutomationAction & { type: 'CAPTURE_EMAIL' })
 
 export type TagAutomationAction = AutomationAction & { type: 'APPLY_TAG' }
 

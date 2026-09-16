@@ -1,4 +1,4 @@
-import { normalizeAutomationKeyword } from '@engancha/contracts'
+import { normalizeAutomationKeyword } from '@/lib/string-utils'
 import { Sparkles, Info } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 

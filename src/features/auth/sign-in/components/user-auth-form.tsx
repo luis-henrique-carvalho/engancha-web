@@ -38,13 +38,14 @@ export function UserAuthForm({ className, ...props }: React.HTMLAttributes<HTMLF
   async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
     setError('')
-    const result = await authClient.signIn.email(data).catch(() => ({ error: true }))
-    setIsLoading(false)
-    if ('error' in result && result.error) {
-      setError('Não foi possível entrar. Verifique os dados ou confirme seu e-mail.')
-      return
+    try {
+      await authClient.login(data)
+      await navigate({ to: '/' })
+    } catch (err: any) {
+      setError(err?.message || 'Não foi possível entrar. Verifique os dados ou credenciais.')
+    } finally {
+      setIsLoading(false)
     }
-    await navigate({ to: '/workspace' })
   }
 
   async function signInWithGoogle() {

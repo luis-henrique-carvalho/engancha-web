@@ -1,6 +1,7 @@
 import type { ColumnDef } from '@tanstack/react-table'
-import type { AutomationResponse } from '@engancha/contracts'
+import type { Automation } from '@/types/api'
 import { DataTableColumnHeader } from '@/components/data-table/column-header'
+import { Badge } from '@/components/ui/badge'
 import { AutomationStatusBadge } from '../shared/automation-status-badge'
 import { AutomationRowActions } from './automation-row-actions'
 
@@ -19,7 +20,7 @@ function formatDate(dateString: string): string {
   }
 }
 
-export function createAutomationColumns(workspaceId?: string): ColumnDef<AutomationResponse>[] {
+export function createAutomationColumns(workspaceId?: string): ColumnDef<Automation>[] {
   return [
     {
       accessorKey: 'name',
@@ -29,17 +30,14 @@ export function createAutomationColumns(workspaceId?: string): ColumnDef<Automat
           title="Nome"
         />
       ),
-      cell: ({ row }) => {
-        const name = row.original.current?.name?.trim() || 'Rascunho sem nome'
-        return (
-          <span
-            className="font-medium text-foreground"
-            data-testid="automation-name"
-          >
-            {name}
-          </span>
-        )
-      },
+      cell: ({ row }) => (
+        <span
+          className="font-medium text-foreground"
+          data-testid="automation-name"
+        >
+          {row.original.name || 'Sem nome'}
+        </span>
+      ),
       enableSorting: false,
     },
     {
@@ -50,46 +48,31 @@ export function createAutomationColumns(workspaceId?: string): ColumnDef<Automat
           title="Status"
         />
       ),
-      cell: ({ row }) => (
-        <AutomationStatusBadge
-          status={row.original.status}
-          hasUnpublishedChanges={row.original.hasUnpublishedChanges}
-        />
-      ),
+      cell: ({ row }) => <AutomationStatusBadge status={row.original.status} />,
       enableSorting: false,
     },
     {
-      id: 'target',
+      accessorKey: 'mediaType',
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title="Conteúdo"
+          title="Tipo de Mídia"
         />
       ),
-      cell: ({ row }) => {
-        const title = row.original.current?.target?.title || '—'
-        return (
-          <span
-            className="text-muted-foreground truncate max-w-[200px] inline-block"
-            title={title}
-          >
-            {title}
-          </span>
-        )
-      },
+      cell: ({ row }) => <Badge variant="outline">{row.original.mediaType}</Badge>,
       enableSorting: false,
     },
     {
-      id: 'keyword',
+      id: 'keywords',
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title="Palavra-chave"
+          title="Palavras-chave"
         />
       ),
       cell: ({ row }) => {
-        const keyword = row.original.current?.keyword || '—'
-        return <span className="text-muted-foreground">{keyword}</span>
+        const kw = row.original.keywords?.join(', ') || '—'
+        return <span className="text-muted-foreground text-xs">{kw}</span>
       },
       enableSorting: false,
     },
@@ -109,34 +92,6 @@ export function createAutomationColumns(workspaceId?: string): ColumnDef<Automat
       enableSorting: false,
     },
     {
-      accessorKey: 'executionCount',
-      header: ({ column }) => (
-        <DataTableColumnHeader
-          column={column}
-          title="Execuções"
-        />
-      ),
-      cell: ({ row }) => (
-        <span className="text-sm font-mono text-center block w-full">
-          {row.original.executionCount}
-        </span>
-      ),
-      enableSorting: false,
-    },
-    {
-      accessorKey: 'leadCount',
-      header: ({ column }) => (
-        <DataTableColumnHeader
-          column={column}
-          title="Leads"
-        />
-      ),
-      cell: ({ row }) => (
-        <span className="text-sm font-mono text-center block w-full">{row.original.leadCount}</span>
-      ),
-      enableSorting: false,
-    },
-    {
       id: 'actions',
       cell: ({ row }) => (
         <AutomationRowActions
@@ -148,4 +103,4 @@ export function createAutomationColumns(workspaceId?: string): ColumnDef<Automat
   ]
 }
 
-export const automationColumns: ColumnDef<AutomationResponse>[] = createAutomationColumns()
+export const automationColumns: ColumnDef<Automation>[] = createAutomationColumns()

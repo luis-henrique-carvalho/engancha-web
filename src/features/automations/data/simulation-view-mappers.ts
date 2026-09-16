@@ -110,5 +110,12 @@ export function getExecutionStatusViewModel(
         description: error?.message || 'A simulação não pôde ser concluída.',
         variant: 'destructive',
       }
+    default:
+      return {
+        status: 'PENDING',
+        label: 'Aguardando',
+        description: 'Aguardando processamento.',
+        variant: 'outline',
+      }
   }
 }

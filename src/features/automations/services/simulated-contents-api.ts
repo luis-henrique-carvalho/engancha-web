@@ -1,10 +1,8 @@
-import {
-  type ContentListResponse,
-  type ContentResponse,
-  type CreateContentRequest,
-  type PaginationRequest,
-  contentListResponseSchema,
-  contentResponseSchema,
+import type {
+  ContentListResponse,
+  ContentResponse,
+  CreateContentRequest,
+  PaginationRequest,
 } from '@engancha/contracts'
 import { apiFetch } from '@/lib/api-client'
 
@@ -16,15 +14,15 @@ export const SimulatedContentsApi = {
 
     const query = searchParams.toString()
     const path = query ? `/simulated-contents?${query}` : '/simulated-contents'
-    const data = await apiFetch<unknown>(path)
-    return contentListResponseSchema.parse(data)
+    const data = await apiFetch<ContentListResponse>(path)
+    return data
   },
 
   async create(body: CreateContentRequest): Promise<ContentResponse> {
-    const data = await apiFetch<unknown>('/simulated-contents', {
+    const data = await apiFetch<ContentResponse>('/simulated-contents', {
       method: 'POST',
       body: JSON.stringify(body),
     })
-    return contentResponseSchema.parse(data)
+    return data
   },
 }

@@ -1,4 +1,4 @@
-import type { AutomationStatus } from '@engancha/contracts'
+import type { AutomationStatus } from '@/types/api'
 import { Badge } from '@/components/ui/badge'
 import { AUTOMATION_STATUS_MAP } from '../../data/automation-status'
 

@@ -24,16 +24,17 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { DataTablePagination } from '@/components/data-table'
-import type { ContactListQuery, ContactSummary, PaginationMeta } from '@engancha/contracts'
+import type { Contact, PaginationMeta } from '@/types/api'
+import type { ListContactsParams } from '../services/contacts-api'
 import { Search, Users } from 'lucide-react'
 import { contactsColumns } from './contacts-columns'
 
 type Props = {
-  data: ContactSummary[]
+  data: Contact[]
   isLoading: boolean
   meta: PaginationMeta
-  params: Partial<ContactListQuery>
-  onParamsChange: (params: Partial<ContactListQuery>) => void
+  params: Partial<ListContactsParams>
+  onParamsChange: (params: Partial<ListContactsParams>) => void
   onPageChange: (page: number) => void
   onPageSizeChange: (limit: number) => void
 }
@@ -114,24 +115,7 @@ export function ContactsTable({
             </SelectContent>
           </Select>
 
-          <Select
-            value={params.leadState ?? 'ALL'}
-            onValueChange={(val) => {
-              const leadState = val as ContactListQuery['leadState']
-              onParamsChange({ ...params, leadState, page: 1 })
-            }}
-          >
-            <SelectTrigger className="h-9 w-[160px] text-xs">
-              <SelectValue placeholder="Estado de Lead" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">Todos os contatos</SelectItem>
-              <SelectItem value="LEAD">Apenas Leads</SelectItem>
-              <SelectItem value="NOT_LEAD">Apenas Contatos</SelectItem>
-            </SelectContent>
-          </Select>
-
-          {(params.query || params.leadState || params.provider?.length) && (
+          {(params.query || params.provider?.length) && (
             <Button
               variant="ghost"
               size="sm"
@@ -195,7 +179,7 @@ export function ContactsTable({
                   <div className="flex flex-col items-center justify-center gap-2">
                     <Users className="size-6 text-muted-foreground/60" />
                     <span>
-                      {params.query || params.leadState || params.provider?.length
+                      {params.query || params.provider?.length
                         ? 'Nenhum contato encontrado para os filtros aplicados.'
                         : 'Nenhum contato registrado ainda neste workspace.'}
                     </span>

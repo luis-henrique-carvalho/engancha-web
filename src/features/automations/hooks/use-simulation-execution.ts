@@ -7,12 +7,7 @@ import type {
 import { SimulationsApi } from '../services/simulations-api'
 
 export type SseConnectionStatus =
-  | 'idle'
-  | 'connecting'
-  | 'connected'
-  | 'reconnecting'
-  | 'closed'
-  | 'error'
+  'idle' | 'connecting' | 'connected' | 'reconnecting' | 'closed' | 'error'
 
 const TERMINAL_STATUSES: ExecutionStatus[] = ['COMPLETED', 'IGNORED', 'FAILED']
 
@@ -317,7 +312,7 @@ export function useSimulationExecution(options?: UseSimulationExecutionOptions) 
   const updateExecutionIfNewer = useCallback(
     (data?: SimulationExecutionResponse | null) => {
       if (!data || typeof data !== 'object') return
-      setExecution((prev) => {
+      setExecution((prev: SimulationExecutionResponse | null) => {
         if (!prev || (data.stateVersion ?? 0) >= (prev.stateVersion ?? 0)) {
           return data
         }

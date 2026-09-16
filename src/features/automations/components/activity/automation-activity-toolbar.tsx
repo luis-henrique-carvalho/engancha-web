@@ -28,11 +28,11 @@ export function AutomationActivityToolbar({
 }: AutomationActivityToolbarProps) {
   const isFiltered = Boolean(
     query ||
-      filters.status?.length ||
-      filters.provider?.length ||
-      filters.mode?.length ||
-      filters.contentType?.length ||
-      filters.outputType?.length,
+    filters.status?.length ||
+    filters.provider?.length ||
+    filters.mode?.length ||
+    filters.contentType?.length ||
+    filters.outputType?.length,
   )
 
   return (

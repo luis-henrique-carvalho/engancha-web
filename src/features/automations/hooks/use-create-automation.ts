@@ -1,15 +1,15 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import type { CreateAutomationRequest } from '@engancha/contracts'
+import type { CreateAutomationRequest } from '@/types/api'
 import { AutomationsApi } from '../services/automations-api'
-import { invalidateAutomationsList } from '../services/automations-invalidations'
+import { automationsKeys } from '../services/automations-query-keys'
 
 export function useCreateAutomation(workspaceId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (body?: CreateAutomationRequest) => AutomationsApi.create(body),
+    mutationFn: (body: CreateAutomationRequest) => AutomationsApi.create(body),
     onSuccess: () => {
-      void invalidateAutomationsList(queryClient, workspaceId)
+      void queryClient.invalidateQueries({ queryKey: automationsKeys.lists(workspaceId) })
     },
   })
 }

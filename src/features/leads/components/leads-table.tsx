@@ -203,10 +203,10 @@ export function LeadsTable({ data, isLoading, meta, params, onParamsChange }: Pr
 
   const hasActiveFilters = Boolean(
     params.query ||
-      (params.provider && params.provider.length > 0) ||
-      (params.mode && params.mode.length > 0) ||
-      params.automationId ||
-      params.tagId,
+    (params.provider && params.provider.length > 0) ||
+    (params.mode && params.mode.length > 0) ||
+    params.automationId ||
+    params.tagId,
   )
 
   return (

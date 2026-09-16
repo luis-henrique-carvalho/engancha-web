@@ -1,53 +1,61 @@
-import {
-  type SimulationCommentRequest,
-  type SimulationCommentResponse,
-  type SimulationExecutionListQuery,
-  type SimulationExecutionListResponse,
-  type SimulationExecutionResponse,
-  simulationCommentResponseSchema,
-  simulationExecutionListResponseSchema,
-  simulationExecutionResponseSchema,
+import type {
+  SimulationCommentRequest,
+  SimulationCommentResponse,
+  SimulationExecutionListQuery,
+  SimulationExecutionListResponse,
+  SimulationExecutionResponse,
 } from '@engancha/contracts'
 import { apiFetch } from '@/lib/api-client'
 import { apiBaseUrl } from '@/lib/auth-client'
 
 export const SimulationsApi = {
   async submitComment(body: SimulationCommentRequest): Promise<SimulationCommentResponse> {
-    const data = await apiFetch<unknown>('/simulations/comments', {
+    const data = await apiFetch<SimulationCommentResponse>('/simulations/comments', {
       method: 'POST',
       body: JSON.stringify(body),
     })
-    return simulationCommentResponseSchema.parse(data)
+    return data
   },
 
   async getExecution(executionId: string): Promise<SimulationExecutionResponse> {
-    const data = await apiFetch<unknown>(`/simulations/executions/${executionId}`)
-    return simulationExecutionResponseSchema.parse(data)
+    const data = await apiFetch<SimulationExecutionResponse>(
+      `/simulations/executions/${executionId}`,
+    )
+    return data
   },
 
   async listExecutions(
-    query?: Partial<SimulationExecutionListQuery>,
+    params: SimulationExecutionListQuery = { page: 1, limit: 50 },
   ): Promise<SimulationExecutionListResponse> {
-    const params = new URLSearchParams(
-      Object.entries(query ?? {})
-        .filter(([, value]) => value !== undefined && value !== '')
-        .flatMap(([key, value]) =>
-          Array.isArray(value) ? value.map((item) => [key, String(item)]) : [[key, String(value)]],
-        ),
-    )
+    const searchParams = new URLSearchParams()
+    if (params.page) searchParams.set('page', String(params.page))
+    if (params.limit) searchParams.set('limit', String(params.limit))
+    if (params.status) searchParams.set('status', params.status)
+    if (params.automationId) searchParams.set('automationId', params.automationId)
+    if (params.contentId) searchParams.set('contentId', params.contentId)
 
-    const queryString = params.toString()
-    const path = queryString ? `/simulations/executions?${queryString}` : '/simulations/executions'
-
-    const data = await apiFetch<unknown>(path)
-    return simulationExecutionListResponseSchema.parse(data)
+    const query = searchParams.toString()
+    const path = query ? `/simulations/executions?${query}` : '/simulations/executions'
+    const data = await apiFetch<SimulationExecutionListResponse>(path)
+    return data
   },
 
-  async retryExecution(executionId: string): Promise<SimulationCommentResponse> {
-    const data = await apiFetch<unknown>(`/simulations/executions/${executionId}/retry`, {
-      method: 'POST',
-    })
-    return simulationCommentResponseSchema.parse(data)
+  getExecutionStreamUrl(executionId: string): string {
+    return `${apiBaseUrl()}/simulations/executions/${executionId}/stream`
+  },
+
+  async retryExecution(executionId: string): Promise<SimulationExecutionResponse> {
+    const data = await apiFetch<SimulationExecutionResponse>(
+      `/simulations/executions/${executionId}/retry`,
+      {
+        method: 'POST',
+      },
+    )
+    return data
+  },
+
+  getEventsUrl(executionId: string): string {
+    return `${apiBaseUrl()}/simulations/executions/${executionId}/events`
   },
 
   async submitEmailCaptureResponse(
@@ -62,9 +70,5 @@ export const SimulationsApi = {
         body: JSON.stringify(body),
       },
     )
-  },
-
-  getEventsUrl(executionId: string): string {
-    return `${apiBaseUrl}/api/v1/simulations/executions/${executionId}/events`
   },
 }

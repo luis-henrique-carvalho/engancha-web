@@ -1,38 +1,49 @@
-import {
-  type ConversationDetailResponse,
-  type ConversationListQuery,
-  type ConversationListResponse,
-  conversationDetailResponseSchema,
-  conversationListResponseSchema,
-} from '@engancha/contracts'
+import type {
+  Conversation,
+  ConversationPage,
+  ConversationStatus,
+  Message,
+  PaginationParams,
+} from '@/types/api'
 import { apiFetch } from '@/lib/api-client'
+
+export interface ListConversationsParams extends PaginationParams {
+  status?: ConversationStatus[]
+  startDate?: string
+  endDate?: string
+  automationId?: string
+}
 
 export const conversationsQueryKeys = {
   all: ['conversations'] as const,
-  list: (params?: Partial<ConversationListQuery>) =>
+  list: (params?: Partial<ListConversationsParams>) =>
     [...conversationsQueryKeys.all, 'list', params] as const,
   detail: (id: string) => [...conversationsQueryKeys.all, 'detail', id] as const,
+  messages: (id: string) => [...conversationsQueryKeys.all, 'detail', id, 'messages'] as const,
 }
 
 export const ConversationsApi = {
-  async list(query?: Partial<ConversationListQuery>): Promise<ConversationListResponse> {
-    const params = new URLSearchParams(
-      Object.entries(query ?? {})
-        .filter(([, value]) => value !== undefined && value !== '')
-        .flatMap(([key, value]) =>
-          Array.isArray(value) ? value.map((item) => [key, String(item)]) : [[key, String(value)]],
-        ),
-    )
+  list(params: ListConversationsParams = { page: 1, limit: 20 }): Promise<ConversationPage> {
+    const searchParams = new URLSearchParams()
+    if (params.page) searchParams.set('page', String(params.page))
+    if (params.limit) searchParams.set('limit', String(params.limit))
+    if (params.query?.trim()) searchParams.set('query', params.query.trim())
+    if (params.status) {
+      params.status.forEach((st) => searchParams.append('status', st))
+    }
+    if (params.startDate) searchParams.set('startDate', params.startDate)
+    if (params.endDate) searchParams.set('endDate', params.endDate)
+    if (params.automationId) searchParams.set('automationId', params.automationId)
 
-    const queryString = params.toString()
-    const path = queryString ? `/conversations?${queryString}` : '/conversations'
-
-    const data = await apiFetch<unknown>(path)
-    return conversationListResponseSchema.parse(data)
+    const qs = searchParams.toString()
+    return apiFetch<ConversationPage>(`/conversations${qs ? `?${qs}` : ''}`)
   },
 
-  async getById(id: string): Promise<ConversationDetailResponse> {
-    const data = await apiFetch<unknown>(`/conversations/${id}`)
-    return conversationDetailResponseSchema.parse(data)
+  getById(id: string): Promise<Conversation> {
+    return apiFetch<Conversation>(`/conversations/${id}`)
+  },
+
+  listMessages(id: string): Promise<Message[]> {
+    return apiFetch<Message[]>(`/conversations/${id}/messages`)
   },
 }

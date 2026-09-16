@@ -5,8 +5,7 @@ import { getCookie, removeCookie, setCookie } from './cookies'
 const COOKIE_PREFIX = 'test_cookie_'
 
 describe('cookies', () => {
-  const uniqueName = () =>
-    `${COOKIE_PREFIX}${Math.random().toString(36).slice(2)}`
+  const uniqueName = () => `${COOKIE_PREFIX}${Math.random().toString(36).slice(2)}`
 
   beforeEach(() => {
     clearCookies(COOKIE_PREFIX)

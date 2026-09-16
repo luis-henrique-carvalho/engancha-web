@@ -2,20 +2,12 @@ import { useForm } from 'react-hook-form'
 import { describe, expect, it } from 'vitest'
 import { render } from 'vitest-browser-react'
 import { userEvent } from 'vitest/browser'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '@/components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form'
 import { PasswordInput } from './password-input'
 
 describe('PasswordInput', () => {
   it('renders the password input correctly', async () => {
-    const { getByPlaceholder, getByRole } = await render(
-      <PasswordInput placeholder='password' />
-    )
+    const { getByPlaceholder, getByRole } = await render(<PasswordInput placeholder="password" />)
 
     const passwordInput = getByPlaceholder('password')
     const showPasswordButton = getByRole('button', { name: /show password/i })
@@ -26,9 +18,7 @@ describe('PasswordInput', () => {
   })
 
   it('toggles the password visibility when the show password button is clicked', async () => {
-    const { getByPlaceholder, getByRole } = await render(
-      <PasswordInput placeholder='password' />
-    )
+    const { getByPlaceholder, getByRole } = await render(<PasswordInput placeholder="password" />)
 
     const passwordInput = getByPlaceholder('password')
     const showPasswordButton = getByRole('button', { name: /show password/i })
@@ -45,14 +35,15 @@ describe('PasswordInput', () => {
     await userEvent.click(hidePasswordButton)
 
     await expect.element(passwordInput).toHaveAttribute('type', 'password')
-    await expect
-      .element(getByRole('button', { name: /show password/i }))
-      .toBeInTheDocument()
+    await expect.element(getByRole('button', { name: /show password/i })).toBeInTheDocument()
   })
 
   it('disables the show password button when the password input is disabled', async () => {
     const { getByPlaceholder, getByRole } = await render(
-      <PasswordInput placeholder='password' disabled />
+      <PasswordInput
+        placeholder="password"
+        disabled
+      />,
     )
 
     const passwordInput = getByPlaceholder('password')
@@ -72,7 +63,7 @@ describe('PasswordInput', () => {
           <form>
             <FormField
               control={form.control}
-              name='password'
+              name="password"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Password</FormLabel>

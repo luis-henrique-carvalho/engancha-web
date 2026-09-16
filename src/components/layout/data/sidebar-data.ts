@@ -1,10 +1,10 @@
-import { Bot, Contact, LayoutDashboard, MessageSquare, UserCheck, UsersRound } from 'lucide-react'
-import type { ActiveWorkspaceResponse } from '@engancha/contracts'
+import { Bot, Contact, LayoutDashboard, MessageSquare, Share2, UsersRound } from 'lucide-react'
+import type { ActiveWorkspace } from '@/types/api'
 import type { SidebarData, User } from '../types'
 
 type SidebarDataInput = {
   user: User
-  workspace: ActiveWorkspaceResponse
+  workspace: ActiveWorkspace
 }
 
 export function createSidebarData({ user, workspace }: SidebarDataInput): SidebarData {
@@ -13,7 +13,7 @@ export function createSidebarData({ user, workspace }: SidebarDataInput): Sideba
     workspace,
     navGroups: [
       {
-        title: 'Produto',
+        title: 'Geral',
         items: [
           {
             title: 'Workspace',
@@ -26,6 +26,11 @@ export function createSidebarData({ user, workspace }: SidebarDataInput): Sideba
             icon: Bot,
           },
           {
+            title: 'Canais',
+            url: '/channels',
+            icon: Share2,
+          },
+          {
             title: 'Conversas',
             url: '/conversations',
             icon: MessageSquare,
@@ -36,12 +41,7 @@ export function createSidebarData({ user, workspace }: SidebarDataInput): Sideba
             icon: Contact,
           },
           {
-            title: 'Leads',
-            url: '/leads',
-            icon: UserCheck,
-          },
-          {
-            title: 'Pessoas',
+            title: 'Membros',
             url: '/users',
             icon: UsersRound,
           },

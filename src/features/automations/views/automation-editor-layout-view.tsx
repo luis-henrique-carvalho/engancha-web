@@ -174,7 +174,8 @@ export function AutomationEditorLayoutView({
   if (isError || !automation) return <AutomationEditorNotFound />
   if (automation.status === 'ARCHIVED') return <AutomationEditorArchived />
 
-  const name = automation.current?.name?.trim() || 'Rascunho de automação'
+  const name =
+    (automation as any).name || (automation as any).current?.name?.trim() || 'Rascunho de automação'
   const isTestTab = pathname.endsWith('/test')
   const isActivityTab = pathname.endsWith('/activity')
   const isConfigTab = !isTestTab && !isActivityTab
@@ -214,7 +215,7 @@ export function AutomationEditorLayoutView({
                 </h2>
                 <AutomationStatusBadge
                   status={automation.status}
-                  hasUnpublishedChanges={automation.hasUnpublishedChanges}
+                  hasUnpublishedChanges={(automation as any).hasUnpublishedChanges}
                 />
               </div>
               <p className="text-xs text-muted-foreground">
@@ -224,7 +225,7 @@ export function AutomationEditorLayoutView({
           </div>
         </div>
 
-        {automation.status === 'ACTIVE' && automation.hasUnpublishedChanges && (
+        {automation.status === 'ACTIVE' && (automation as any).hasUnpublishedChanges && (
           <Alert
             className="border-amber-500/30 bg-amber-500/10 text-amber-900 dark:text-amber-200"
             data-testid="automation-active-unpublished-banner"
