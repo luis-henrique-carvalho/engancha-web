@@ -23,7 +23,9 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
+
 
 /* ─── Status helpers ─────────────────────────────────────── */
 
@@ -176,15 +178,19 @@ function ChannelCard({
     >
       {/* Top section */}
       <div className="flex items-start gap-4 p-5">
-        {/* Provider avatar */}
-        <div
-          className={cn(
-            'flex size-12 shrink-0 items-center justify-center rounded-2xl',
-            meta.bgLightClass,
-          )}
-        >
-          <ChannelIcon provider={channel.provider} className="size-6" />
-        </div>
+        {/* Profile picture — falls back to provider icon */}
+        <Avatar className="size-12 shrink-0 rounded-2xl">
+          <AvatarImage
+            src={channel.profilePictureUrl ?? undefined}
+            alt={channel.accountName}
+            className="object-cover"
+          />
+          <AvatarFallback
+            className={cn('rounded-2xl', meta.bgLightClass)}
+          >
+            <ChannelIcon provider={channel.provider} className="size-6" />
+          </AvatarFallback>
+        </Avatar>
 
         {/* Identity */}
         <div className="min-w-0 flex-1">

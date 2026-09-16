@@ -142,6 +142,7 @@ export interface ChannelConnection {
   provider: ChannelProvider
   externalAccountId: string
   accountName: string
+  profilePictureUrl?: string | null
   scopes: string[]
   tokenExpiresAt: string | null
   isExpired: boolean
