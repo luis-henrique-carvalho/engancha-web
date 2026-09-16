@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   RefreshCw,
@@ -26,10 +27,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
 
-
 /* ─── Status helpers ─────────────────────────────────────── */
 
-type ChannelStatus = 'ACTIVE' | 'EXPIRED' | 'DISCONNECTED' | 'ERROR' | string
+type ChannelStatus = 'ACTIVE' | 'EXPIRED' | 'DISCONNECTED' | 'REVOKED' | 'ERROR' | string
 
 interface StatusConfig {
   label: string
@@ -57,6 +57,12 @@ function getStatusConfig(status: ChannelStatus): StatusConfig {
         icon: <XCircle className="size-3" />,
         className: 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/20',
       }
+    case 'REVOKED':
+      return {
+        label: 'Revogado',
+        icon: <XCircle className="size-3" />,
+        className: 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/20',
+      }
     default:
       return {
         label: status,
@@ -68,13 +74,18 @@ function getStatusConfig(status: ChannelStatus): StatusConfig {
 
 function fmt(date?: string | null) {
   if (!date) return null
-  return new Date(date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
+  return new Date(date).toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  })
 }
 
 /* ─── ChannelsView ──────────────────────────────────────── */
 
 export function ChannelsView() {
   const queryClient = useQueryClient()
+  const [reconnectingProvider, setReconnectingProvider] = useState<string | null>(null)
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['channels-connections'],
@@ -102,6 +113,21 @@ export function ChannelsView() {
       toast.error(err?.message || 'Falha ao desconectar canal.')
     },
   })
+
+  const handleReconnect = async (provider: string) => {
+    try {
+      setReconnectingProvider(provider)
+      const res = await ChannelsApi.getConnectURL(provider)
+      if (res?.authorizationUrl) {
+        window.location.href = res.authorizationUrl
+      } else {
+        throw new Error('URL de autorização inválida retornada pelo servidor.')
+      }
+    } catch (err: any) {
+      setReconnectingProvider(null)
+      toast.error(err?.message || `Falha ao iniciar reconexão com ${provider}.`)
+    }
+  }
 
   const items = data?.items ?? []
 
@@ -135,8 +161,10 @@ export function ChannelsView() {
                 channel={channel}
                 isRevalidating={revalidateMutation.isPending}
                 isDisconnecting={disconnectMutation.isPending}
+                isReconnecting={reconnectingProvider === channel.provider}
                 onRevalidate={() => revalidateMutation.mutate(channel.id)}
                 onDisconnect={() => disconnectMutation.mutate(channel.id)}
+                onReconnect={() => handleReconnect(channel.provider)}
               />
             ))}
           </div>
@@ -152,20 +180,25 @@ interface ChannelCardProps {
   channel: ChannelConnection
   isRevalidating: boolean
   isDisconnecting: boolean
+  isReconnecting: boolean
   onRevalidate: () => void
   onDisconnect: () => void
+  onReconnect: () => void
 }
 
 function ChannelCard({
   channel,
   isRevalidating,
   isDisconnecting,
+  isReconnecting,
   onRevalidate,
   onDisconnect,
+  onReconnect,
 }: ChannelCardProps) {
   const meta = getProviderMetadata(channel.provider)
   const status = getStatusConfig(channel.status)
   const isActive = channel.status === 'ACTIVE'
+  const isDisconnected = channel.status === 'DISCONNECTED' || channel.status === 'REVOKED'
 
   return (
     <div
@@ -185,9 +218,7 @@ function ChannelCard({
             alt={channel.accountName}
             className="object-cover"
           />
-          <AvatarFallback
-            className={cn('rounded-2xl', meta.bgLightClass)}
-          >
+          <AvatarFallback className={cn('rounded-2xl', meta.bgLightClass)}>
             <ChannelIcon provider={channel.provider} className="size-6" />
           </AvatarFallback>
         </Avatar>
@@ -201,7 +232,10 @@ function ChannelCard({
           </div>
 
           <div className="mt-1 flex items-center gap-2">
-            <Badge variant="secondary" className="rounded-md px-1.5 py-0 text-[10px] font-medium">
+            <Badge
+              variant="secondary"
+              className="rounded-md px-1.5 py-0 text-[10px] font-medium"
+            >
               {meta.shortName}
             </Badge>
 
@@ -262,41 +296,62 @@ function ChannelCard({
 
       {/* Footer actions */}
       <div className="mt-auto flex items-center gap-2 border-t px-5 py-3">
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-8 flex-1 text-xs"
-          onClick={onRevalidate}
-          disabled={isRevalidating}
-        >
-          {isRevalidating ? (
-            <Loader2 className="size-3.5 animate-spin" />
-          ) : (
-            <>
-              <RefreshCw className="me-1.5 size-3.5" />
-              Revalidar
-            </>
-          )}
-        </Button>
+        {isDisconnected ? (
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 flex-1 text-xs"
+            onClick={onReconnect}
+            disabled={isReconnecting}
+          >
+            {isReconnecting ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <>
+                <RefreshCw className="me-1.5 size-3.5" />
+                Reconectar
+              </>
+            )}
+          </Button>
+        ) : (
+          <>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 flex-1 text-xs"
+              onClick={onRevalidate}
+              disabled={isRevalidating}
+            >
+              {isRevalidating ? (
+                <Loader2 className="size-3.5 animate-spin" />
+              ) : (
+                <>
+                  <RefreshCw className="me-1.5 size-3.5" />
+                  Revalidar
+                </>
+              )}
+            </Button>
 
-        <Separator orientation="vertical" className="h-5" />
+            <Separator orientation="vertical" className="h-5" />
 
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 flex-1 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
-          onClick={onDisconnect}
-          disabled={isDisconnecting}
-        >
-          {isDisconnecting ? (
-            <Loader2 className="size-3.5 animate-spin" />
-          ) : (
-            <>
-              <Unlink className="me-1.5 size-3.5" />
-              Desconectar
-            </>
-          )}
-        </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 flex-1 text-xs text-destructive hover:bg-destructive/10 hover:text-destructive"
+              onClick={onDisconnect}
+              disabled={isDisconnecting}
+            >
+              {isDisconnecting ? (
+                <Loader2 className="size-3.5 animate-spin" />
+              ) : (
+                <>
+                  <Unlink className="me-1.5 size-3.5" />
+                  Desconectar
+                </>
+              )}
+            </Button>
+          </>
+        )}
       </div>
     </div>
   )
