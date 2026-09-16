@@ -1,15 +1,30 @@
 import type {
   ChannelConnection,
+  ChannelConnectionPage,
   ChannelMedia,
   ChannelProvider,
+  ListChannelsParams,
   OAuthCallbackRequest,
   OAuthConnectURL,
 } from '@/types/api'
 import { apiFetch } from '@/lib/api-client'
 
 export const ChannelsApi = {
-  listConnections(): Promise<{ items: ChannelConnection[] }> {
-    return apiFetch<{ items: ChannelConnection[] }>('/channels/connections')
+  listConnections(params?: ListChannelsParams): Promise<ChannelConnectionPage> {
+    const searchParams = new URLSearchParams()
+    if (params?.page) searchParams.set('page', String(params.page))
+    if (params?.limit) searchParams.set('limit', String(params.limit))
+    if (params?.query) searchParams.set('query', params.query)
+    if (params?.status && params.status.length > 0) {
+      params.status.forEach((s) => searchParams.append('status', s))
+    }
+    if (params?.provider && params.provider.length > 0) {
+      params.provider.forEach((p) => searchParams.append('provider', p))
+    }
+    const queryString = searchParams.toString()
+    return apiFetch<ChannelConnectionPage>(
+      `/channels/connections${queryString ? `?${queryString}` : ''}`,
+    )
   },
 
   getConnection(id: string): Promise<ChannelConnection> {

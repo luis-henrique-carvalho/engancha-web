@@ -146,6 +146,16 @@ export interface ChannelConnection {
   updatedAt: string
 }
 
+export interface ChannelConnectionPage {
+  items: ChannelConnection[]
+  meta: PaginationMeta
+}
+
+export interface ListChannelsParams extends PaginationParams {
+  status?: ChannelStatus[]
+  provider?: string[]
+}
+
 export interface ChannelMedia {
   id: string
   externalId: string
