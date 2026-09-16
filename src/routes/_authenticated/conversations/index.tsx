@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { ConversationsHeader, ConversationsListView } from '@/features/conversations/views'
+import { ConversationsHeader } from '@/features/conversations/components/conversations-list-header'
+import { ConversationsListView } from '@/features/conversations/views'
 import { WorkspaceShell } from '@/features/workspaces/workspace-shell'
 import type { ListConversationsParams } from '@/features/conversations/services/conversations-api'
 import type { ConversationStatus } from '@/types/api'

@@ -5,9 +5,6 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useConversationDetail } from '../hooks/use-conversation-detail'
 import { useConversationMessages } from '../hooks/use-conversation-messages'
 import { ConversationChat } from '../components/conversation-chat'
-import { ConversationDetailHeader } from '../components/conversation-detail-header'
-
-export { ConversationDetailHeader }
 
 type Props = {
   workspaceId: string

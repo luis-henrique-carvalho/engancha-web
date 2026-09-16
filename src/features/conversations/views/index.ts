@@ -1,2 +1,2 @@
-export { ConversationsListView, ConversationsHeader } from './conversations-list-view'
-export { ConversationDetailView, ConversationDetailHeader } from './conversation-detail-view'
+export { ConversationsListView } from './conversations-list-view'
+export { ConversationDetailView } from './conversation-detail-view'

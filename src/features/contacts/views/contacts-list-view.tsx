@@ -1,9 +1,6 @@
 import type { ListContactsParams } from '../services/contacts-api'
 import { useContactsList } from '../hooks/use-contacts-list'
 import { ContactsTable } from '../components/contacts-table'
-import { ContactsHeader } from '../components/contacts-header'
-
-export { ContactsHeader }
 
 type Props = {
   workspaceId: string

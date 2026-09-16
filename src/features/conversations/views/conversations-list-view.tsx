@@ -1,9 +1,6 @@
 import type { ListConversationsParams } from '../services/conversations-api'
 import { useConversationsList } from '../hooks/use-conversations-list'
 import { ConversationsTable } from '../components/conversations-table'
-import { ConversationsHeader } from '../components/conversations-list-header'
-
-export { ConversationsHeader }
 
 type Props = {
   workspaceId: string

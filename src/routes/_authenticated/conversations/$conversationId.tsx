@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { ConversationDetailHeader, ConversationDetailView } from '@/features/conversations/views'
+import { ConversationDetailHeader } from '@/features/conversations/components/conversation-detail-header'
+import { ConversationDetailView } from '@/features/conversations/views'
 import { WorkspaceShell } from '@/features/workspaces/workspace-shell'
 
 export const Route = createFileRoute('/_authenticated/conversations/$conversationId')({

@@ -1,9 +1,6 @@
 import type { LeadListQuery } from '@engancha/contracts'
 import { useLeadsList } from '../hooks/use-leads-list'
 import { LeadsTable } from '../components/leads-table'
-import { LeadsHeader } from '../components/leads-header'
-
-export { LeadsHeader }
 
 type Props = {
   workspaceId: string

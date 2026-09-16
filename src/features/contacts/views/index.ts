@@ -1,1 +1,1 @@
-export { ContactsListView, ContactsHeader } from './contacts-list-view'
+export { ContactsListView } from './contacts-list-view'

@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { ContactsHeader, ContactsListView } from '@/features/contacts/views'
+import { ContactsHeader } from '@/features/contacts/components/contacts-header'
+import { ContactsListView } from '@/features/contacts/views'
 import { WorkspaceShell } from '@/features/workspaces/workspace-shell'
 import type { ListContactsParams } from '@/features/contacts/services/contacts-api'
 
