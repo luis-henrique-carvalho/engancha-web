@@ -1,11 +1,6 @@
-import { useState } from 'react'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Link, useNavigate } from '@tanstack/react-router'
+import { Link } from '@tanstack/react-router'
 import { Loader2, LogIn } from 'lucide-react'
 import { IconGmail } from '@/assets/brand-icons'
-import { authClient, webCallbackUrl } from '@/lib/auth-client'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
@@ -18,44 +13,10 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
-
-const formSchema = z.object({
-  email: z.email({
-    error: (issue) => (issue.input === '' ? 'Informe seu e-mail.' : 'Informe um e-mail válido.'),
-  }),
-  password: z.string().min(1, 'Informe sua senha.'),
-})
+import { useUserAuthForm } from '../hooks/use-user-auth-form'
 
 export function UserAuthForm({ className, ...props }: React.HTMLAttributes<HTMLFormElement>) {
-  const navigate = useNavigate()
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { email: '', password: '' },
-  })
-
-  async function onSubmit(data: z.infer<typeof formSchema>) {
-    setIsLoading(true)
-    setError('')
-    try {
-      await authClient.login(data)
-      await navigate({ to: '/' })
-    } catch (err: any) {
-      setError(err?.message || 'Não foi possível entrar. Verifique os dados ou credenciais.')
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  async function signInWithGoogle() {
-    setError('')
-    const result = await authClient.signIn.social({
-      provider: 'google',
-      callbackURL: webCallbackUrl('/workspace'),
-    })
-    if (result.error) setError('O acesso com Google não pôde ser concluído.')
-  }
+  const { form, isLoading, error, onSubmit, signInWithGoogle } = useUserAuthForm()
 
   return (
     <Form {...form}>

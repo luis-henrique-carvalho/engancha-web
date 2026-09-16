@@ -1,21 +1,15 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate } from '@tanstack/react-router'
 import type { AutomationResponse } from '@engancha/contracts'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form'
-import {
-  AutomationSaveBar,
-  AutomationStepSection,
-  ContentPicker,
-  useOptionalAutomationEditor,
-} from '../components'
+import { AutomationSaveBar, AutomationStepSection, ContentPicker } from '../components'
 import {
   automationContentSchema,
   type AutomationContentFormValues,
 } from '../data/automation-step-schemas'
 import { useAutomationMutations } from '../hooks/use-automation-mutations'
-import { useAutomation } from '../hooks/use-automation'
 import { useUnsavedChanges } from '../hooks/use-unsaved-changes'
+import { useStepViewContext } from '../hooks/use-step-view-context'
 
 interface ContentStepViewProps {
   workspaceId?: string
@@ -30,38 +24,23 @@ export function ContentStepView({
   automation: propAutomation,
   onNext: propOnNext,
 }: ContentStepViewProps = {}) {
-  const context = useOptionalAutomationEditor()
-  const navigate = useNavigate()
+  const { workspaceId, automationId, activeAutomation, navigate } = useStepViewContext({
+    workspaceId: propWorkspaceId,
+    automationId: propAutomationId,
+    automation: propAutomation,
+  })
 
-  const workspaceId = propWorkspaceId ?? context?.workspaceId ?? ''
-  const automationId = propAutomationId ?? context?.automationId ?? ''
-
-  const { data: fetchedAutomation } = useAutomation(
-    propAutomation ? '' : workspaceId,
-    propAutomation ? '' : automationId,
-  )
-
-  const activeAutomation = propAutomation ?? context?.automation ?? fetchedAutomation
   const currentTargetId = activeAutomation?.current?.target?.id ?? ''
-
   const { patchAutomation, isSaving } = useAutomationMutations(workspaceId, automationId)
 
   const form = useForm<AutomationContentFormValues>({
     resolver: zodResolver(automationContentSchema),
-    values: {
-      targetId: currentTargetId,
-    },
-    resetOptions: {
-      keepDirtyValues: true,
-    },
-    defaultValues: {
-      targetId: currentTargetId,
-    },
+    values: { targetId: currentTargetId },
+    resetOptions: { keepDirtyValues: true },
+    defaultValues: { targetId: currentTargetId },
   })
 
-  const { UnsavedChangesDialog } = useUnsavedChanges({
-    isDirty: form.formState.isDirty,
-  })
+  const { UnsavedChangesDialog } = useUnsavedChanges({ isDirty: form.formState.isDirty })
 
   const onSubmit = async (values: AutomationContentFormValues) => {
     const targetId = values.targetId?.trim()

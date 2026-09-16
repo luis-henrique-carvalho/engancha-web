@@ -1,165 +1,20 @@
 import { Link, Outlet, useLocation } from '@tanstack/react-router'
-import { Activity, Archive, ArrowLeft, Bot, Info, Play, Sliders } from 'lucide-react'
+import { ArrowLeft, Info } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
-import { Skeleton } from '@/components/ui/skeleton'
-import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 import { AutomationEditorProvider } from '../components/shared/automation-editor-provider'
 import { AutomationStatusBadge } from '../components/shared/automation-status-badge'
 import { AutomationStepNav } from '../components/shared/automation-step-nav'
+import { AutomationEditorLoading } from '../components/shared/automation-editor-loading'
+import { AutomationEditorNotFound } from '../components/shared/automation-editor-not-found'
+import { AutomationEditorArchived } from '../components/shared/automation-editor-archived'
+import { AutomationDetailTabs } from '../components/shared/automation-detail-tabs'
 import { useAutomation } from '../hooks/use-automation'
 
 interface AutomationEditorLayoutViewProps {
   workspaceId: string
   automationId: string
   children?: React.ReactNode
-}
-
-function AutomationEditorLoading() {
-  return (
-    <div
-      className="space-y-6"
-      data-testid="automation-editor-loading"
-    >
-      <div className="flex items-center gap-4">
-        <Skeleton className="size-9 rounded-md" />
-        <div className="space-y-2">
-          <Skeleton className="h-7 w-64" />
-          <Skeleton className="h-4 w-32" />
-        </div>
-      </div>
-      <Separator />
-      <div className="flex flex-col gap-6 md:flex-row">
-        <Skeleton className="h-64 w-full md:w-56" />
-        <Skeleton className="h-96 flex-1" />
-      </div>
-    </div>
-  )
-}
-
-function AutomationEditorNotFound() {
-  return (
-    <div
-      className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center"
-      role="alert"
-      data-testid="automation-editor-not-found"
-    >
-      <div className="flex size-14 items-center justify-center rounded-full bg-muted text-muted-foreground">
-        <Bot className="size-7" />
-      </div>
-      <h3 className="mt-4 text-lg font-semibold tracking-tight">Automação não encontrada</h3>
-      <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-        A automação solicitada não existe ou não pertence a este workspace.
-      </p>
-      <Button
-        className="mt-6"
-        asChild
-      >
-        <Link
-          to="/automations"
-          search={{ page: 1, limit: 20 }}
-        >
-          <ArrowLeft className="mr-2 size-4" />
-          Voltar para automações
-        </Link>
-      </Button>
-    </div>
-  )
-}
-
-function AutomationEditorArchived() {
-  return (
-    <div
-      className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center"
-      role="alert"
-      data-testid="automation-editor-archived"
-    >
-      <div className="flex size-14 items-center justify-center rounded-full bg-muted text-muted-foreground">
-        <Archive className="size-7" />
-      </div>
-      <h3 className="mt-4 text-lg font-semibold tracking-tight">Automação arquivada</h3>
-      <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-        Esta automação foi arquivada e não pode mais ser editada ou reativada.
-      </p>
-      <Button
-        className="mt-6"
-        asChild
-      >
-        <Link
-          to="/automations"
-          search={{ page: 1, limit: 20 }}
-        >
-          <ArrowLeft className="mr-2 size-4" />
-          Voltar para automações
-        </Link>
-      </Button>
-    </div>
-  )
-}
-
-function AutomationDetailTabs({
-  automationId,
-  isConfigTab,
-  isTestTab,
-  isActivityTab,
-}: {
-  automationId: string
-  isConfigTab: boolean
-  isTestTab: boolean
-  isActivityTab: boolean
-}) {
-  return (
-    <div
-      className="flex items-center gap-1 border-b pb-2 sm:gap-2"
-      role="tablist"
-      aria-label="Navegação da automação"
-      data-testid="automation-detail-tabs"
-    >
-      <Link
-        to={`/automations/${automationId}/identification` as any}
-        role="tab"
-        aria-selected={isConfigTab}
-        className={cn(
-          buttonVariants({ variant: isConfigTab ? 'secondary' : 'ghost', size: 'sm' }),
-          isConfigTab ? 'bg-secondary font-semibold text-foreground' : 'text-muted-foreground',
-          'gap-2 text-xs h-8 px-3',
-        )}
-        data-testid="tab-link-config"
-      >
-        <Sliders className="size-3.5" />
-        Configuração
-      </Link>
-      <Link
-        to={`/automations/${automationId}/test` as any}
-        role="tab"
-        aria-selected={isTestTab}
-        className={cn(
-          buttonVariants({ variant: isTestTab ? 'secondary' : 'ghost', size: 'sm' }),
-          isTestTab ? 'bg-secondary font-semibold text-foreground' : 'text-muted-foreground',
-          'gap-2 text-xs h-8 px-3',
-        )}
-        data-testid="tab-link-test"
-      >
-        <Play className="size-3.5" />
-        Testar
-      </Link>
-      <Link
-        to={`/automations/${automationId}/activity` as any}
-        role="tab"
-        aria-selected={isActivityTab}
-        className={cn(
-          buttonVariants({ variant: isActivityTab ? 'secondary' : 'ghost', size: 'sm' }),
-          isActivityTab ? 'bg-secondary font-semibold text-foreground' : 'text-muted-foreground',
-          'gap-2 text-xs h-8 px-3',
-        )}
-        data-testid="tab-link-activity"
-      >
-        <Activity className="size-3.5" />
-        Atividade
-      </Link>
-    </div>
-  )
 }
 
 export function AutomationEditorLayoutView({

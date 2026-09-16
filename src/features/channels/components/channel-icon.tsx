@@ -1,5 +1,5 @@
 import React from 'react'
-import { Instagram, MessageSquare, Globe } from 'lucide-react'
+import { Instagram, Globe } from 'lucide-react'
 import { IconWhatsapp, IconTelegram } from '@/assets/brand-icons'
 import { cn } from '@/lib/utils'
 
@@ -13,11 +13,26 @@ export function ChannelIcon({ provider, className, ...props }: ChannelIconProps)
 
   switch (p) {
     case 'instagram':
-      return <Instagram className={cn('size-4 text-pink-600 dark:text-pink-400', className)} {...props} />
+      return (
+        <Instagram
+          className={cn('size-4 text-pink-600 dark:text-pink-400', className)}
+          {...props}
+        />
+      )
     case 'whatsapp':
-      return <IconWhatsapp className={cn('size-4 text-emerald-600 dark:text-emerald-400', className)} {...props} />
+      return (
+        <IconWhatsapp
+          className={cn('size-4 text-emerald-600 dark:text-emerald-400', className)}
+          {...props}
+        />
+      )
     case 'telegram':
-      return <IconTelegram className={cn('size-4 text-blue-500 dark:text-blue-400', className)} {...props} />
+      return (
+        <IconTelegram
+          className={cn('size-4 text-blue-500 dark:text-blue-400', className)}
+          {...props}
+        />
+      )
     case 'twitter':
     case 'x':
       return (
@@ -42,6 +57,11 @@ export function ChannelIcon({ provider, className, ...props }: ChannelIconProps)
         </svg>
       )
     default:
-      return <Globe className={cn('size-4 text-muted-foreground', className)} {...props} />
+      return (
+        <Globe
+          className={cn('size-4 text-muted-foreground', className)}
+          {...props}
+        />
+      )
   }
 }

@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { UsersHeader, UsersView } from '@/features/users/views'
+import { UsersHeader } from '@/features/users/components/users-header'
+import { UsersView } from '@/features/users/views'
 import { WorkspaceShell } from '@/features/workspaces/workspace-shell'
 import type { ListUsersParams } from '@/features/users/services/users-api'
 

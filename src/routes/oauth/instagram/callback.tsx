@@ -72,7 +72,10 @@ function InstagramCallbackPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto mb-2 p-3 rounded-full bg-muted/60 w-fit">
-            <ChannelIcon provider="instagram" className="size-8" />
+            <ChannelIcon
+              provider="instagram"
+              className="size-8"
+            />
           </div>
           <CardTitle>Conectar Instagram</CardTitle>
           <CardDescription>Finalizando conexão da conta profissional</CardDescription>

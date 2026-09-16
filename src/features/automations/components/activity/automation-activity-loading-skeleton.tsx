@@ -16,7 +16,7 @@ export function AutomationActivityLoadingSkeleton() {
         {[1, 2, 3].map((key) => (
           <Card
             key={key}
-            className="space-y-3 p-4"
+            className="p-4 space-y-3"
           >
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2.5">

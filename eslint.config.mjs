@@ -14,6 +14,7 @@ export default tseslint.config(
       '**/routeTree.gen.ts',
       '**/generated/**',
       'graphify-out/**',
+      '**/src/components/**',
     ],
   },
   eslint.configs.recommended,
@@ -37,6 +38,16 @@ export default tseslint.config(
           caughtErrorsIgnorePattern: '^_',
         },
       ],
+      'max-lines': [
+        'error',
+        {
+          max: 300,
+          skipBlankLines: true,
+          skipComments: true,
+        },
+      ],
+      complexity: ['error', 15],
+      'max-depth': ['error', 4],
     },
   },
   {
@@ -71,11 +82,11 @@ export default tseslint.config(
       },
     },
     rules: {
-      'react/no-multi-comp': ['error', { ignoreStateless: true }],
+      'react/no-multi-comp': ['error', { ignoreStateless: false }],
       'max-lines-per-function': [
         'error',
         {
-          max: 200,
+          max: 100,
           skipBlankLines: true,
           skipComments: true,
           IIFEs: true,
@@ -84,9 +95,10 @@ export default tseslint.config(
     },
   },
   {
-    files: ['**/components/ui/**', '**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
+    files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
     rules: {
       'react/no-multi-comp': 'off',
+      'max-lines': 'off',
     },
   },
   {
@@ -101,6 +113,7 @@ export default tseslint.config(
     ],
     rules: {
       'max-lines-per-function': 'off',
+      'max-lines': 'off',
     },
   },
 )

@@ -25,7 +25,6 @@ export function AutomationRowActions({ automation, workspaceId = '' }: Automatio
   )
 
   const isActive = automation.status === 'ACTIVE'
-  const isPaused = automation.status === 'PAUSED' || automation.status === 'DRAFT'
 
   const handleToggleStatus = async () => {
     await updateStatus(isActive ? 'PAUSED' : 'ACTIVE')

@@ -1,32 +1,16 @@
-import { ConfigDrawer } from '#/components/config-drawer'
-import { Header } from '#/components/layout/header'
-import { ProfileDropdown } from '#/components/profile-dropdown'
-import { Search } from '#/components/search'
-import { ThemeSwitch } from '#/components/theme-switch'
 import { UsersDialogs } from '../components/users-dialogs'
-import { UsersPrimaryButtons } from '../components/users-primary-buttons'
 import { UsersProvider } from '../components/users-provider'
 import { UsersTable } from '../components/users-table'
+import { UsersHeader } from '../components/users-header'
 import { useUsersList } from '../hooks/use-users'
 import { userUiSchema } from '../data/schema'
 import type { ListUsersParams } from '../services/users-api'
 
-type UsersViewProps = {
+export type UsersViewProps = {
   canManage: boolean
   workspaceId: string
   params: ListUsersParams
   onParamsChange: (params: ListUsersParams) => void
-}
-
-export function UsersHeader() {
-  return (
-    <Header fixed>
-      <Search className="me-auto" />
-      <ThemeSwitch />
-      <ConfigDrawer />
-      <ProfileDropdown />
-    </Header>
-  )
 }
 
 export function UsersView({ canManage, workspaceId, params, onParamsChange }: UsersViewProps) {
@@ -37,15 +21,7 @@ export function UsersView({ canManage, workspaceId, params, onParamsChange }: Us
 
   return (
     <UsersProvider workspaceId={workspaceId}>
-      <div className="flex flex-wrap items-end justify-between gap-2">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Lista de pessoas</h2>
-          <p className="text-muted-foreground">
-            Gerencie os membros e convites do workspace ativo.
-          </p>
-        </div>
-        <UsersPrimaryButtons />
-      </div>
+      <UsersHeader />
 
       <UsersTable
         data={users}

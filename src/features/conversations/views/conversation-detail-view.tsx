@@ -1,26 +1,13 @@
 import { Link } from '@tanstack/react-router'
 import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Header } from '@/components/layout/header'
-import { Search } from '@/components/search'
-import { ThemeSwitch } from '@/components/theme-switch'
-import { ConfigDrawer } from '@/components/config-drawer'
-import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useConversationDetail } from '../hooks/use-conversation-detail'
 import { useConversationMessages } from '../hooks/use-conversation-messages'
 import { ConversationChat } from '../components/conversation-chat'
+import { ConversationDetailHeader } from '../components/conversation-detail-header'
 
-export function ConversationDetailHeader() {
-  return (
-    <Header fixed>
-      <Search className="me-auto" />
-      <ThemeSwitch />
-      <ConfigDrawer />
-      <ProfileDropdown />
-    </Header>
-  )
-}
+export { ConversationDetailHeader }
 
 type Props = {
   workspaceId: string

@@ -57,40 +57,60 @@ export interface BuildActionsOptions {
   finalAction?: FinalAutomationAction | null
 }
 
+function resolveTextAction(
+  existing: AutomationAction | undefined,
+  type: 'PUBLIC_REPLY' | 'PRIVATE_REPLY',
+  value: string | null | undefined,
+  hasKey: boolean,
+): AutomationAction | undefined {
+  if (!hasKey) return existing
+  const trimmed = value?.trim()
+  return trimmed ? { type, text: trimmed } : undefined
+}
+
+function resolveGenericAction<T>(
+  existing: T | undefined,
+  value: T | null | undefined,
+  hasKey: boolean,
+): T | undefined {
+  if (!hasKey) return existing
+  return value ?? undefined
+}
+
 export function buildUpdatedActions(
   currentActions: AutomationAction[] | null | undefined,
   update: BuildActionsOptions,
 ): AutomationAction[] {
-  const existingActions = currentActions ? [...currentActions] : []
+  const existing = currentActions ?? []
 
-  let publicReplyAction = existingActions.find((a) => a.type === 'PUBLIC_REPLY')
-  let privateReplyAction = existingActions.find((a) => a.type === 'PRIVATE_REPLY')
-  let tagAction = existingActions.find((a) => a.type === 'APPLY_TAG')
-  let finalAction = existingActions.find((a) => a.type === 'LINK' || a.type === 'CAPTURE_EMAIL')
+  const publicReply = resolveTextAction(
+    existing.find((a) => a.type === 'PUBLIC_REPLY'),
+    'PUBLIC_REPLY',
+    update.publicReply,
+    'publicReply' in update,
+  )
 
-  if ('publicReply' in update) {
-    const trimmed = update.publicReply?.trim()
-    publicReplyAction = trimmed ? { type: 'PUBLIC_REPLY', text: trimmed } : undefined
-  }
+  const privateReply = resolveTextAction(
+    existing.find((a) => a.type === 'PRIVATE_REPLY'),
+    'PRIVATE_REPLY',
+    update.privateReply,
+    'privateReply' in update,
+  )
 
-  if ('privateReply' in update) {
-    const trimmed = update.privateReply?.trim()
-    privateReplyAction = trimmed ? { type: 'PRIVATE_REPLY', text: trimmed } : undefined
-  }
+  const tagAction = resolveGenericAction(
+    existing.find((a) => a.type === 'APPLY_TAG') as TagAutomationAction | undefined,
+    update.tagAction,
+    'tagAction' in update,
+  )
 
-  if ('tagAction' in update) {
-    tagAction = update.tagAction ? update.tagAction : undefined
-  }
+  const finalAction = resolveGenericAction(
+    existing.find((a) => a.type === 'LINK' || a.type === 'CAPTURE_EMAIL') as
+      FinalAutomationAction | undefined,
+    update.finalAction,
+    'finalAction' in update,
+  )
 
-  if ('finalAction' in update) {
-    finalAction = update.finalAction ? update.finalAction : undefined
-  }
-
-  const result: AutomationAction[] = []
-  if (publicReplyAction) result.push(publicReplyAction)
-  if (privateReplyAction) result.push(privateReplyAction)
-  if (tagAction) result.push(tagAction)
-  if (finalAction) result.push(finalAction)
-
-  return result
+  return [publicReply, privateReply, tagAction, finalAction].filter(
+    (action): action is AutomationAction => Boolean(action),
+  )
 }

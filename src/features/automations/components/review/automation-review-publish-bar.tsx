@@ -2,6 +2,11 @@ import { Loader2, Pause, Sparkles } from 'lucide-react'
 import type { AutomationStatus } from '@engancha/contracts'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import {
+  getPublishBarDescription,
+  getPublishBarTitle,
+  getPublishButtonLabel,
+} from './automation-review-publish-helpers'
 
 export interface AutomationReviewPublishBarProps {
   status: AutomationStatus
@@ -25,30 +30,16 @@ export function AutomationReviewPublishBar({
   const isActive = status === 'ACTIVE'
   const isPaused = status === 'PAUSED'
 
+  const title = getPublishBarTitle(isActive, isPaused, hasUnpublishedChanges)
+  const description = getPublishBarDescription(isActive, isPaused, hasUnpublishedChanges, isReady)
+  const publishLabel = getPublishButtonLabel(status, hasUnpublishedChanges)
+
   return (
     <Card className="border-primary/20 bg-primary/5">
       <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
-          <h4 className="font-semibold text-sm">
-            {isActive
-              ? hasUnpublishedChanges
-                ? 'Automação ativa com alterações pendentes'
-                : 'Automação ativa no workspace'
-              : isPaused
-                ? 'Automação pausada'
-                : 'Pronto para ativar sua automação?'}
-          </h4>
-          <p className="text-xs text-muted-foreground">
-            {isActive
-              ? hasUnpublishedChanges
-                ? 'A versão atualmente em execução continua respondendo no Instagram até que você publique as alterações.'
-                : 'Esta automação está atualmente ativa respondendo aos comentários e mensagens.'
-              : isPaused
-                ? 'Esta automação está pausada e não está processando comentários. Publique novamente para reativar.'
-                : isReady
-                  ? 'Ao publicar, a automação começará a responder interações para este conteúdo imediatamente.'
-                  : 'Complete as pendências indicadas no checklist acima para habilitar a publicação.'}
-          </p>
+          <h4 className="font-semibold text-sm">{title}</h4>
+          <p className="text-xs text-muted-foreground">{description}</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -90,13 +81,7 @@ export function AutomationReviewPublishBar({
             ) : (
               <>
                 <Sparkles className="mr-2 h-4 w-4" />
-                {isActive && hasUnpublishedChanges
-                  ? 'Publicar alterações'
-                  : isActive
-                    ? 'Republicar automação'
-                    : isPaused
-                      ? 'Reativar automação'
-                      : 'Publicar automação'}
+                {publishLabel}
               </>
             )}
           </Button>

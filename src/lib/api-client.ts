@@ -38,42 +38,44 @@ interface ApiErrorPayload {
   issues?: unknown
 }
 
-export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  const token = getStoredToken()
-  const workspaceId = getStoredWorkspaceId()
-
-  const headers = new Headers(init?.headers)
-  if (!headers.has('content-type') && !(init?.body instanceof FormData)) {
+function buildHeaders(initHeaders?: HeadersInit, body?: BodyInit | null): Headers {
+  const headers = new Headers(initHeaders)
+  if (!headers.has('content-type') && !(body instanceof FormData)) {
     headers.set('content-type', 'application/json')
   }
 
+  const token = getStoredToken()
   if (token && !headers.has('authorization') && !headers.has('Authorization')) {
     headers.set('Authorization', `Bearer ${token}`)
   }
 
+  const workspaceId = getStoredWorkspaceId()
   if (workspaceId && !headers.has('x-workspace-id') && !headers.has('X-Workspace-ID')) {
     headers.set('X-Workspace-ID', workspaceId)
   }
 
-  // Se o caminho já inicia com /v1 ou http, usa direto; caso contrário, prefixa com /v1
+  return headers
+}
+
+function resolveTargetPath(path: string): string {
   const cleanPath = path.startsWith('/') ? path : `/${path}`
-  const targetPath =
-    cleanPath.startsWith('/v1') || cleanPath.startsWith('/health') || cleanPath.startsWith('/ready')
-      ? cleanPath
-      : `/v1${cleanPath}`
+  if (
+    cleanPath.startsWith('/v1') ||
+    cleanPath.startsWith('/health') ||
+    cleanPath.startsWith('/ready')
+  ) {
+    return cleanPath
+  }
+  return `/v1${cleanPath}`
+}
 
-  const response = await fetch(`${apiBaseUrl}${targetPath}`, {
-    ...init,
-    headers,
-  })
-
-  // Retornos 204 No Content
+async function handleApiResponse<T>(response: Response): Promise<T> {
   if (response.status === 204) {
     return {} as T
   }
 
   const contentType = response.headers.get('content-type')
-  if (contentType && contentType.includes('text/plain')) {
+  if (contentType?.includes('text/plain')) {
     const text = await response.text()
     return text as unknown as T
   }
@@ -92,4 +94,16 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
   }
 
   return body as T
+}
+
+export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const headers = buildHeaders(init?.headers, init?.body)
+  const targetPath = resolveTargetPath(path)
+
+  const response = await fetch(`${apiBaseUrl}${targetPath}`, {
+    ...init,
+    headers,
+  })
+
+  return handleApiResponse<T>(response)
 }

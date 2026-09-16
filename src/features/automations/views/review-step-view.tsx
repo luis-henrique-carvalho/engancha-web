@@ -1,12 +1,11 @@
 import { useState } from 'react'
-import { useNavigate } from '@tanstack/react-router'
 import type { AutomationResponse } from '@engancha/contracts'
 import { ConfirmDialog } from '@/components/confirm-dialog'
-import { ApiClientError } from '@/lib/api-client'
-import { AutomationReview, AutomationStepSection, useOptionalAutomationEditor } from '../components'
+import { AutomationReview, AutomationStepSection } from '../components'
 import type { AutomationStepId } from '../data/automation-readiness'
 import { useAutomationMutations } from '../hooks/use-automation-mutations'
-import { useAutomation } from '../hooks/use-automation'
+import { useStepViewContext } from '../hooks/use-step-view-context'
+import { useReviewStepPublish } from '../hooks/use-review-step-publish'
 
 export interface ReviewStepViewProps {
   workspaceId?: string
@@ -25,26 +24,22 @@ export function ReviewStepView({
   onPublished: propOnPublished,
   onPaused: propOnPaused,
 }: ReviewStepViewProps = {}) {
-  const context = useOptionalAutomationEditor()
-  const navigate = useNavigate()
+  const { workspaceId, automationId, activeAutomation, navigate } = useStepViewContext({
+    workspaceId: propWorkspaceId,
+    automationId: propAutomationId,
+    automation: propAutomation,
+  })
 
-  const workspaceId = propWorkspaceId ?? context?.workspaceId ?? ''
-  const automationId = propAutomationId ?? context?.automationId ?? ''
-
-  const { data: fetchedAutomation } = useAutomation(
-    propAutomation ? '' : workspaceId,
-    propAutomation ? '' : automationId,
-  )
-
-  const activeAutomation = propAutomation ?? context?.automation ?? fetchedAutomation
   const { publishAutomation, isPublishing, pauseAutomation, isPausing } = useAutomationMutations(
     workspaceId,
     automationId,
   )
 
-  const [publishIssues, setPublishIssues] = useState<string[] | null>(null)
-  const [publishErrorMessage, setPublishErrorMessage] = useState<string | null>(null)
   const [isPauseDialogOpen, setIsPauseDialogOpen] = useState(false)
+  const { publishIssues, publishErrorMessage, handlePublish } = useReviewStepPublish(
+    publishAutomation,
+    propOnPublished,
+  )
 
   const handleNavigateStep = (stepId: AutomationStepId) => {
     if (propOnNavigateStep) {
@@ -56,37 +51,6 @@ export function ReviewStepView({
       to: `/automations/$automationId/${stepId}`,
       params: { automationId },
     })
-  }
-
-  const handlePublish = async () => {
-    setPublishIssues(null)
-    setPublishErrorMessage(null)
-
-    try {
-      await publishAutomation()
-      propOnPublished?.()
-    } catch (error) {
-      if (error instanceof ApiClientError && error.code === 'AUTOMATION_NOT_PUBLISHABLE') {
-        const issues = Array.isArray(error.issues) ? (error.issues as string[]) : []
-        setPublishIssues(issues)
-        setPublishErrorMessage(
-          'A automação possui requisitos obrigatórios incompletos para publicação.',
-        )
-      } else if (error instanceof ApiClientError && error.code === 'AUTOMATION_TRIGGER_CONFLICT') {
-        setPublishIssues(['targetId', 'keyword'])
-        setPublishErrorMessage(
-          'Já existe outra automação ativa configurada para a mesma combinação de conteúdo e palavra-chave.',
-        )
-      } else if (error instanceof ApiClientError && error.code === 'AUTOMATION_ARCHIVED') {
-        setPublishErrorMessage(
-          'Esta automação está arquivada e não pode mais ser publicada ou modificada.',
-        )
-      } else {
-        setPublishErrorMessage(
-          error instanceof Error ? error.message : 'Falha inesperada ao publicar a automação.',
-        )
-      }
-    }
   }
 
   const handleConfirmPause = async () => {

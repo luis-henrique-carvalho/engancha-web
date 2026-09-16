@@ -115,13 +115,7 @@ export interface Invitation {
 
 // Canais & Mídias
 export type ChannelProvider =
-  | 'instagram'
-  | 'whatsapp'
-  | 'twitter'
-  | 'tiktok'
-  | 'telegram'
-  | 'messenger'
-  | (string & {})
+  'instagram' | 'whatsapp' | 'twitter' | 'tiktok' | 'telegram' | 'messenger' | (string & {})
 export type ChannelStatus = 'ACTIVE' | 'ERROR' | 'EXPIRED' | 'REVOKED' | 'DISCONNECTED'
 export type MediaType = 'POST' | 'REEL'
 

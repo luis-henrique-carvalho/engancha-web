@@ -1,6 +1,5 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate } from '@tanstack/react-router'
 import type { AutomationResponse } from '@engancha/contracts'
 import {
   Form,
@@ -12,19 +11,15 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  AutomationSaveBar,
-  AutomationStepSection,
-  useOptionalAutomationEditor,
-} from '../components'
+import { AutomationSaveBar, AutomationStepSection } from '../components'
 import { buildUpdatedActions, getPublicReplyText } from '../data/automation-action-mappers'
 import {
   automationPublicReplySchema,
   type AutomationPublicReplyFormValues,
 } from '../data/automation-step-schemas'
 import { useAutomationMutations } from '../hooks/use-automation-mutations'
-import { useAutomation } from '../hooks/use-automation'
 import { useUnsavedChanges } from '../hooks/use-unsaved-changes'
+import { useStepViewContext } from '../hooks/use-step-view-context'
 
 interface PublicReplyStepViewProps {
   workspaceId?: string
@@ -39,46 +34,30 @@ export function PublicReplyStepView({
   automation: propAutomation,
   onNext: propOnNext,
 }: PublicReplyStepViewProps = {}) {
-  const context = useOptionalAutomationEditor()
-  const navigate = useNavigate()
+  const { workspaceId, automationId, activeAutomation, navigate } = useStepViewContext({
+    workspaceId: propWorkspaceId,
+    automationId: propAutomationId,
+    automation: propAutomation,
+  })
 
-  const workspaceId = propWorkspaceId ?? context?.workspaceId ?? ''
-  const automationId = propAutomationId ?? context?.automationId ?? ''
-
-  const { data: fetchedAutomation } = useAutomation(
-    propAutomation ? '' : workspaceId,
-    propAutomation ? '' : automationId,
-  )
-
-  const activeAutomation = propAutomation ?? context?.automation ?? fetchedAutomation
   const currentActions = activeAutomation?.current?.actions ?? []
   const initialText = getPublicReplyText(currentActions)
-
   const { patchAutomation, isSaving } = useAutomationMutations(workspaceId, automationId)
 
   const form = useForm<AutomationPublicReplyFormValues>({
     resolver: zodResolver(automationPublicReplySchema),
-    values: {
-      text: initialText,
-    },
-    defaultValues: {
-      text: initialText,
-    },
+    values: { text: initialText },
+    defaultValues: { text: initialText },
   })
 
   const watchedText = form.watch('text') ?? ''
-
-  const { UnsavedChangesDialog } = useUnsavedChanges({
-    isDirty: form.formState.isDirty,
-  })
+  const { UnsavedChangesDialog } = useUnsavedChanges({ isDirty: form.formState.isDirty })
 
   const onSubmit = async (values: AutomationPublicReplyFormValues) => {
     const updatedActions = buildUpdatedActions(currentActions, {
       publicReply: values.text,
     })
-    await patchAutomation({
-      actions: updatedActions,
-    })
+    await patchAutomation({ actions: updatedActions })
     form.reset(values)
   }
 

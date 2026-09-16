@@ -1,22 +1,9 @@
-import { Header } from '@/components/layout/header'
-import { Search } from '@/components/search'
-import { ThemeSwitch } from '@/components/theme-switch'
-import { ConfigDrawer } from '@/components/config-drawer'
-import { ProfileDropdown } from '@/components/profile-dropdown'
 import type { LeadListQuery } from '@engancha/contracts'
 import { useLeadsList } from '../hooks/use-leads-list'
 import { LeadsTable } from '../components/leads-table'
+import { LeadsHeader } from '../components/leads-header'
 
-export function LeadsHeader() {
-  return (
-    <Header fixed>
-      <Search className="me-auto" />
-      <ThemeSwitch />
-      <ConfigDrawer />
-      <ProfileDropdown />
-    </Header>
-  )
-}
+export { LeadsHeader }
 
 type Props = {
   workspaceId: string

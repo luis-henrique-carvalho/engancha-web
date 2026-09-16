@@ -58,7 +58,9 @@ describe('AutomationsListView', () => {
 
     await expect.element(getByText('Automações')).toBeInTheDocument()
     await expect
-      .element(getByText('Gerencie respostas automáticas a comentários e interações em seus canais.'))
+      .element(
+        getByText('Gerencie respostas automáticas a comentários e interações em seus canais.'),
+      )
       .toBeInTheDocument()
     await expect.element(getByTestId('automation-table-loading')).toBeInTheDocument()
   })

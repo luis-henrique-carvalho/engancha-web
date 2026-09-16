@@ -1,4 +1,4 @@
-import type { Contact, ContactPage, PaginationParams } from '@/types/api'
+import type { ContactPage, PaginationParams } from '@/types/api'
 import { apiFetch } from '@/lib/api-client'
 
 export interface ListContactsParams extends PaginationParams {

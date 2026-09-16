@@ -9,9 +9,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { useCreateSimulatedContent } from '../../hooks/use-create-simulated-content'
+import { SimulatedContentFormFields } from './simulated-content-form-fields'
 
 interface CreateSimulatedContentDialogProps {
   open: boolean
@@ -89,35 +88,13 @@ export function CreateSimulatedContentDialog({
           onSubmit={handleSubmit}
           className="space-y-4"
         >
-          <div className="space-y-2">
-            <Label htmlFor="simulated-content-title">Título do conteúdo</Label>
-            <Input
-              id="simulated-content-title"
-              data-testid="create-simulated-content-title"
-              placeholder="Ex: Foto de Lançamento de Produto"
-              value={title}
-              maxLength={160}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="simulated-content-external-id">
-              Identificador do post (ID ou permalink)
-            </Label>
-            <Input
-              id="simulated-content-external-id"
-              data-testid="create-simulated-content-id"
-              placeholder="Ex: post_insta_2026_01"
-              value={externalContentId}
-              maxLength={255}
-              onChange={(e) => setExternalContentId(e.target.value)}
-              required
-            />
-          </div>
-
-          {error && <p className="text-xs text-destructive">{error}</p>}
+          <SimulatedContentFormFields
+            title={title}
+            onTitleChange={setTitle}
+            externalContentId={externalContentId}
+            onExternalContentIdChange={setExternalContentId}
+            error={error}
+          />
 
           <DialogFooter className="pt-4">
             <Button

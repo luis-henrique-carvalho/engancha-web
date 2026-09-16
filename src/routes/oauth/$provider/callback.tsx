@@ -30,7 +30,9 @@ function ProviderCallbackPage() {
     if (error || error_description) {
       setStatus('error')
       setErrorMessage(
-        error_description || error || `A autorização com o ${providerMeta.name} foi recusada ou cancelada.`,
+        error_description ||
+          error ||
+          `A autorização com o ${providerMeta.name} foi recusada ou cancelada.`,
       )
       return
     }
@@ -75,7 +77,10 @@ function ProviderCallbackPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto mb-2 p-3 rounded-full bg-muted/60 w-fit">
-            <ChannelIcon provider={provider || 'instagram'} className="size-8" />
+            <ChannelIcon
+              provider={provider || 'instagram'}
+              className="size-8"
+            />
           </div>
           <CardTitle>Conectar {providerMeta.name}</CardTitle>
           <CardDescription>Finalizando conexão da sua conta</CardDescription>
@@ -84,13 +89,17 @@ function ProviderCallbackPage() {
           {status === 'loading' && (
             <>
               <Loader2 className="size-10 animate-spin text-primary" />
-              <p className="text-sm text-muted-foreground">Conectando sua conta com {providerMeta.name}...</p>
+              <p className="text-sm text-muted-foreground">
+                Conectando sua conta com {providerMeta.name}...
+              </p>
             </>
           )}
           {status === 'success' && (
             <>
               <CheckCircle2 className="size-10 text-emerald-600" />
-              <p className="text-sm font-medium">Conta do {providerMeta.name} conectada com sucesso!</p>
+              <p className="text-sm font-medium">
+                Conta do {providerMeta.name} conectada com sucesso!
+              </p>
               <p className="text-xs text-muted-foreground">Redirecionando para seus canais...</p>
             </>
           )}

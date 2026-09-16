@@ -1,6 +1,5 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate } from '@tanstack/react-router'
 import type { AutomationResponse } from '@engancha/contracts'
 import {
   Form,
@@ -12,19 +11,15 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  AutomationSaveBar,
-  AutomationStepSection,
-  useOptionalAutomationEditor,
-} from '../components'
+import { AutomationSaveBar, AutomationStepSection } from '../components'
 import { buildUpdatedActions, getPrivateReplyText } from '../data/automation-action-mappers'
 import {
   automationDirectMessageSchema,
   type AutomationDirectMessageFormValues,
 } from '../data/automation-step-schemas'
 import { useAutomationMutations } from '../hooks/use-automation-mutations'
-import { useAutomation } from '../hooks/use-automation'
 import { useUnsavedChanges } from '../hooks/use-unsaved-changes'
+import { useStepViewContext } from '../hooks/use-step-view-context'
 
 interface DirectMessageStepViewProps {
   workspaceId?: string
@@ -39,46 +34,30 @@ export function DirectMessageStepView({
   automation: propAutomation,
   onNext: propOnNext,
 }: DirectMessageStepViewProps = {}) {
-  const context = useOptionalAutomationEditor()
-  const navigate = useNavigate()
+  const { workspaceId, automationId, activeAutomation, navigate } = useStepViewContext({
+    workspaceId: propWorkspaceId,
+    automationId: propAutomationId,
+    automation: propAutomation,
+  })
 
-  const workspaceId = propWorkspaceId ?? context?.workspaceId ?? ''
-  const automationId = propAutomationId ?? context?.automationId ?? ''
-
-  const { data: fetchedAutomation } = useAutomation(
-    propAutomation ? '' : workspaceId,
-    propAutomation ? '' : automationId,
-  )
-
-  const activeAutomation = propAutomation ?? context?.automation ?? fetchedAutomation
   const currentActions = activeAutomation?.current?.actions ?? []
   const initialText = getPrivateReplyText(currentActions)
-
   const { patchAutomation, isSaving } = useAutomationMutations(workspaceId, automationId)
 
   const form = useForm<AutomationDirectMessageFormValues>({
     resolver: zodResolver(automationDirectMessageSchema),
-    values: {
-      text: initialText,
-    },
-    defaultValues: {
-      text: initialText,
-    },
+    values: { text: initialText },
+    defaultValues: { text: initialText },
   })
 
   const watchedText = form.watch('text') ?? ''
-
-  const { UnsavedChangesDialog } = useUnsavedChanges({
-    isDirty: form.formState.isDirty,
-  })
+  const { UnsavedChangesDialog } = useUnsavedChanges({ isDirty: form.formState.isDirty })
 
   const onSubmit = async (values: AutomationDirectMessageFormValues) => {
     const updatedActions = buildUpdatedActions(currentActions, {
       privateReply: values.text,
     })
-    await patchAutomation({
-      actions: updatedActions,
-    })
+    await patchAutomation({ actions: updatedActions })
     form.reset(values)
   }
 
@@ -128,8 +107,8 @@ export function DirectMessageStepView({
                   />
                 </FormControl>
                 <FormDescription>
-                  Esta mensagem privada será enviada diretamente para o usuário que interagir com
-                  a publicação.
+                  Esta mensagem privada será enviada diretamente para o usuário que interagir com a
+                  publicação.
                 </FormDescription>
                 <FormMessage />
               </FormItem>

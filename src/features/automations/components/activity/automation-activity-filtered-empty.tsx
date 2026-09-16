@@ -2,14 +2,10 @@ import { FilterX } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
-export interface AutomationActivityFilteredEmptyProps {
-  onReset: () => void
-}
-
-export function AutomationActivityFilteredEmpty({ onReset }: AutomationActivityFilteredEmptyProps) {
+export function AutomationActivityFilteredEmpty({ onReset }: { onReset: () => void }) {
   return (
     <Card
-      className="border-dashed bg-muted/10 py-8 text-center"
+      className="border-dashed bg-muted/10 text-center py-8"
       data-testid="automation-activity-filtered-empty"
     >
       <CardHeader className="space-y-2">
@@ -17,7 +13,7 @@ export function AutomationActivityFilteredEmpty({ onReset }: AutomationActivityF
           <FilterX className="size-6" />
         </div>
         <CardTitle className="text-base font-semibold">Nenhuma atividade encontrada</CardTitle>
-        <CardDescription className="mx-auto max-w-sm text-xs">
+        <CardDescription className="text-xs max-w-sm mx-auto">
           Nenhuma interação corresponde aos critérios e filtros selecionados no momento.
         </CardDescription>
       </CardHeader>

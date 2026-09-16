@@ -1,22 +1,9 @@
-import { Header } from '@/components/layout/header'
-import { Search } from '@/components/search'
-import { ThemeSwitch } from '@/components/theme-switch'
-import { ConfigDrawer } from '@/components/config-drawer'
-import { ProfileDropdown } from '@/components/profile-dropdown'
 import type { ListContactsParams } from '../services/contacts-api'
 import { useContactsList } from '../hooks/use-contacts-list'
 import { ContactsTable } from '../components/contacts-table'
+import { ContactsHeader } from '../components/contacts-header'
 
-export function ContactsHeader() {
-  return (
-    <Header fixed>
-      <Search className="me-auto" />
-      <ThemeSwitch />
-      <ConfigDrawer />
-      <ProfileDropdown />
-    </Header>
-  )
-}
+export { ContactsHeader }
 
 type Props = {
   workspaceId: string

@@ -42,7 +42,10 @@ export const contactsColumns: ColumnDef<Contact>[] = [
           variant="outline"
           className="text-xs flex items-center gap-1.5 w-fit capitalize"
         >
-          <ChannelIcon provider={row.original.provider} className="size-3.5" />
+          <ChannelIcon
+            provider={row.original.provider}
+            className="size-3.5"
+          />
           {row.original.provider?.toLowerCase()}
         </Badge>
       )

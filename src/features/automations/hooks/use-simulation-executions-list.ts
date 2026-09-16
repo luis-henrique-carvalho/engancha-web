@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import type {
   ExecutionStatus,
   SimulationExecutionListQuery,
@@ -6,6 +6,8 @@ import type {
 } from '@engancha/contracts'
 import type { ActivityFilters } from '../data/activity-filter-options'
 import { SimulationsApi } from '../services/simulations-api'
+import { useSimulationStreamsPool } from './use-simulation-streams-pool'
+import { useSimulationExecutionsQuery } from './use-simulation-executions-query'
 
 const TERMINAL_STATUSES: ExecutionStatus[] = ['COMPLETED', 'IGNORED', 'FAILED']
 
@@ -17,196 +19,24 @@ export interface UseSimulationExecutionsListOptions {
   limit?: number
 }
 
-function useSimulationStreamsPool(params: {
-  onUpdate: (item: SimulationExecutionResponse) => void
-}) {
-  const [isReconnecting, setIsReconnecting] = useState<boolean>(false)
-  const activeStreamsRef = useRef<Map<string, EventSource>>(new Map())
-  const onUpdateRef = useRef(params.onUpdate)
-  onUpdateRef.current = params.onUpdate
-
-  const closeAllStreams = useCallback(() => {
-    for (const [, es] of activeStreamsRef.current.entries()) {
-      es.close()
-    }
-    activeStreamsRef.current.clear()
-  }, [])
-
-  const closeStreamForExecution = useCallback((id: string) => {
-    const es = activeStreamsRef.current.get(id)
-    if (es) {
-      es.close()
-      activeStreamsRef.current.delete(id)
-    }
-  }, [])
-
-  const startStreamForExecution = useCallback((id: string) => {
-    if (typeof window === 'undefined' || typeof window.EventSource === 'undefined') {
-      return
-    }
-    if (activeStreamsRef.current.has(id)) {
-      return
-    }
-
-    const url = SimulationsApi.getEventsUrl(id)
-    const es = new EventSource(url, { withCredentials: true })
-    activeStreamsRef.current.set(id, es)
-
-    const handleEvent = (event: Event) => {
-      try {
-        const parsed = JSON.parse((event as MessageEvent).data)
-        if (parsed?.data) {
-          onUpdateRef.current(parsed.data)
-        }
-      } catch {
-        // ignore
-      }
-    }
-
-    es.addEventListener('snapshot', handleEvent)
-    es.addEventListener('update', handleEvent)
-
-    es.onerror = () => {
-      setIsReconnecting(true)
-      SimulationsApi.getExecution(id)
-        .then((latest) => {
-          setIsReconnecting(false)
-          if (latest) onUpdateRef.current(latest)
-        })
-        .catch(() => {})
-    }
-  }, [])
-
-  return {
-    isReconnecting,
-    closeAllStreams,
-    closeStreamForExecution,
-    startStreamForExecution,
-  }
+function resolveFilterArray<T>(list?: T[]): T[] | undefined {
+  return list && list.length > 0 ? list : undefined
 }
 
 function buildSerializedFilters(
   options?: UseSimulationExecutionsListOptions,
 ): Partial<SimulationExecutionListQuery> {
-  const params: Partial<SimulationExecutionListQuery> = {
-    limit: options?.limit ?? 20,
-  }
-
-  if (options?.page) params.page = options.page
-  if (options?.automationId) params.automationId = options.automationId
-  if (options?.query) params.query = options.query
-  if (options?.filters?.status?.length) params.status = options.filters.status
-  if (options?.filters?.provider?.length) params.provider = options.filters.provider
-  if (options?.filters?.mode?.length) params.mode = options.filters.mode
-  if (options?.filters?.contentType?.length) params.contentType = options.filters.contentType
-  if (options?.filters?.outputType?.length) params.outputType = options.filters.outputType
-
-  return params
-}
-
-interface UseSimulationExecutionsFetcherParams {
-  options?: UseSimulationExecutionsListOptions
-  startStreamForExecution: (id: string) => void
-  closeAllStreams: () => void
-  updateExecutionInList: (item: SimulationExecutionResponse) => void
-  executions: SimulationExecutionResponse[]
-  setExecutions: React.Dispatch<React.SetStateAction<SimulationExecutionResponse[]>>
-}
-
-interface FetcherBaseParams {
-  serializedFilters: Partial<SimulationExecutionListQuery>
-  page: number
-  limit: number
-  startStreamForExecution: (id: string) => void
-  closeAllStreams: () => void
-  setExecutions: React.Dispatch<React.SetStateAction<SimulationExecutionResponse[]>>
-}
-
-async function fetchExecutionsFromApi(filters: any, fallbackError: string) {
-  try {
-    const res = await SimulationsApi.listExecutions(filters)
-    return { res, error: null }
-  } catch (err) {
-    return {
-      res: null,
-      error: err instanceof Error ? err : new Error(fallbackError),
-    }
-  }
-}
-
-function attachStreamsForItems(
-  items: SimulationExecutionResponse[],
-  startStream: (id: string) => void,
-) {
-  for (const item of items) {
-    if (!TERMINAL_STATUSES.includes(item.status)) {
-      startStream(item.id)
-    }
-  }
-}
-
-function useSimulationExecutionsQuery(params: FetcherBaseParams) {
-  const {
-    serializedFilters,
-    page,
-    limit,
-    startStreamForExecution,
-    closeAllStreams,
-    setExecutions,
-  } = params
-  const [isLoading, setIsLoading] = useState(true)
-  const [isRefreshing, setIsRefreshing] = useState(false)
-  const [error, setError] = useState<Error | null>(null)
-  const [meta, setMeta] = useState({ page, limit, total: 0, totalPages: 0 })
-
-  const fetchInitial = useCallback(async () => {
-    setIsLoading(true)
-    setError(null)
-    closeAllStreams()
-    const { res, error: fetchErr } = await fetchExecutionsFromApi(
-      serializedFilters,
-      'Falha ao carregar histórico de atividades',
-    )
-    if (res) {
-      setExecutions(res.items)
-      setMeta(res.meta)
-      attachStreamsForItems(res.items, startStreamForExecution)
-    } else {
-      setError(fetchErr)
-    }
-    setIsLoading(false)
-  }, [serializedFilters, closeAllStreams, startStreamForExecution, setExecutions])
-
-  const refresh = useCallback(async () => {
-    setIsRefreshing(true)
-    setError(null)
-    const { res, error: fetchErr } = await fetchExecutionsFromApi(
-      serializedFilters,
-      'Falha ao atualizar atividades',
-    )
-    if (res) {
-      setExecutions(res.items)
-      setMeta(res.meta)
-      attachStreamsForItems(res.items, startStreamForExecution)
-    } else {
-      setError(fetchErr)
-    }
-    setIsRefreshing(false)
-  }, [serializedFilters, startStreamForExecution, setExecutions])
-
-  useEffect(() => {
-    void fetchInitial()
-    return () => {
-      closeAllStreams()
-    }
-  }, [fetchInitial, closeAllStreams])
-
+  const f = options?.filters
   return {
-    isLoading,
-    isRefreshing,
-    error,
-    meta,
-    refresh,
+    limit: options?.limit ?? 20,
+    page: options?.page,
+    automationId: options?.automationId,
+    query: options?.query,
+    status: resolveFilterArray(f?.status),
+    provider: resolveFilterArray(f?.provider),
+    mode: resolveFilterArray(f?.mode),
+    contentType: resolveFilterArray(f?.contentType),
+    outputType: resolveFilterArray(f?.outputType),
   }
 }
 
@@ -257,60 +87,6 @@ function useSimulationExecutionRetry(params: {
   return { retryingId, retry }
 }
 
-function useSimulationExecutionsFetcher({
-  options,
-  startStreamForExecution,
-  closeAllStreams,
-  updateExecutionInList,
-  setExecutions,
-}: UseSimulationExecutionsFetcherParams) {
-  const page = options?.page ?? 1
-  const limit = options?.limit ?? 20
-
-  const serializedFilters = useMemo(
-    () => buildSerializedFilters(options),
-    [
-      options?.automationId,
-      options?.query,
-      options?.filters?.status,
-      options?.filters?.provider,
-      options?.filters?.mode,
-      options?.filters?.contentType,
-      options?.filters?.outputType,
-      page,
-      limit,
-    ],
-  )
-
-  const { isLoading, isRefreshing, error, meta, refresh } = useSimulationExecutionsQuery({
-    serializedFilters,
-    page,
-    limit,
-    startStreamForExecution,
-    closeAllStreams,
-    setExecutions,
-  })
-
-  const [retryError, setRetryError] = useState<Error | null>(null)
-
-  const { retryingId, retry } = useSimulationExecutionRetry({
-    startStreamForExecution,
-    updateExecutionInList,
-    setExecutions,
-    setError: setRetryError,
-  })
-
-  return {
-    meta,
-    isLoading,
-    isRefreshing,
-    error: error || retryError,
-    retryingId,
-    refresh,
-    retry,
-  }
-}
-
 export function useSimulationExecutionsList(options?: UseSimulationExecutionsListOptions) {
   const automationId = options?.automationId
   const [executions, setExecutions] = useState<SimulationExecutionResponse[]>([])
@@ -350,15 +126,28 @@ export function useSimulationExecutionsList(options?: UseSimulationExecutionsLis
     [automationId, closeStreamForExecution],
   )
 
-  const { meta, isLoading, isRefreshing, error, retryingId, refresh, retry } =
-    useSimulationExecutionsFetcher({
-      options,
-      startStreamForExecution,
-      closeAllStreams,
-      updateExecutionInList,
-      executions,
-      setExecutions,
-    })
+  const page = options?.page ?? 1
+  const limit = options?.limit ?? 20
+
+  const serializedFilters = useMemo(() => buildSerializedFilters(options), [options])
+
+  const { isLoading, isRefreshing, error, meta, refresh } = useSimulationExecutionsQuery({
+    serializedFilters,
+    page,
+    limit,
+    startStreamForExecution,
+    closeAllStreams,
+    setExecutions,
+  })
+
+  const [retryError, setRetryError] = useState<Error | null>(null)
+
+  const { retryingId, retry } = useSimulationExecutionRetry({
+    startStreamForExecution,
+    updateExecutionInList,
+    setExecutions,
+    setError: setRetryError,
+  })
 
   return {
     executions,
@@ -366,7 +155,7 @@ export function useSimulationExecutionsList(options?: UseSimulationExecutionsLis
     isLoading,
     isRefreshing,
     isReconnecting,
-    error,
+    error: error || retryError,
     retryingId,
     refresh,
     retry,

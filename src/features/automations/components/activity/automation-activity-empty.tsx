@@ -1,16 +1,12 @@
-import { Activity, Play } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
+import { Activity, Play } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
-export interface AutomationActivityEmptyProps {
-  automationId: string
-}
-
-export function AutomationActivityEmpty({ automationId }: AutomationActivityEmptyProps) {
+export function AutomationActivityEmpty({ automationId }: { automationId: string }) {
   return (
     <Card
-      className="border-dashed bg-muted/10 py-8 text-center"
+      className="border-dashed bg-muted/10 text-center py-8"
       data-testid="automation-activity-empty"
     >
       <CardHeader className="space-y-2">
@@ -18,7 +14,7 @@ export function AutomationActivityEmpty({ automationId }: AutomationActivityEmpt
           <Activity className="size-6" />
         </div>
         <CardTitle className="text-base font-semibold">Nenhuma atividade registrada</CardTitle>
-        <CardDescription className="mx-auto max-w-sm text-xs">
+        <CardDescription className="text-xs max-w-sm mx-auto">
           As interações simuladas com a publicação aparecerão aqui em ordem cronológica após o
           primeiro teste.
         </CardDescription>

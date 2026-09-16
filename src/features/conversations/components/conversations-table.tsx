@@ -1,12 +1,9 @@
-import { useState } from 'react'
 import {
   flexRender,
   getCoreRowModel,
   useReactTable,
   type PaginationState,
 } from '@tanstack/react-table'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table,
@@ -16,18 +13,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { DataTablePagination } from '@/components/data-table'
 import type { Conversation, PaginationMeta } from '@/types/api'
 import type { ListConversationsParams } from '../services/conversations-api'
 import { conversationsColumns } from './conversations-columns'
-import { MessageSquare, Search } from 'lucide-react'
+import { ConversationsTableToolbar } from './conversations-table-toolbar'
+import { MessageSquare } from 'lucide-react'
 
 type Props = {
   data: Conversation[]
@@ -48,7 +39,6 @@ export function ConversationsTable({
   onPageChange,
   onPageSizeChange,
 }: Props) {
-  const [searchInput, setSearchInput] = useState(params.query ?? '')
   const pagination: PaginationState = {
     pageIndex: Math.max(0, meta.page - 1),
     pageSize: meta.limit,
@@ -70,66 +60,10 @@ export function ConversationsTable({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault()
-            onParamsChange({ ...params, query: searchInput.trim() || undefined, page: 1 })
-          }}
-          className="flex items-center gap-2 max-w-sm flex-1"
-        >
-          <div className="relative w-full">
-            <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-            <Input
-              placeholder="Buscar por contato, e-mail ou mensagem..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              className="pl-9 h-9"
-            />
-          </div>
-          <Button
-            type="submit"
-            variant="secondary"
-            size="sm"
-            className="h-9"
-          >
-            Buscar
-          </Button>
-        </form>
-
-        <div className="flex items-center gap-2">
-          <Select
-            value={params.status?.[0] ?? 'ALL'}
-            onValueChange={(val) => {
-              const status = val === 'ALL' ? undefined : [val as any]
-              onParamsChange({ ...params, status, page: 1 })
-            }}
-          >
-            <SelectTrigger className="h-9 w-[150px] text-xs">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">Todos os status</SelectItem>
-              <SelectItem value="OPEN">Aberta</SelectItem>
-              <SelectItem value="CLOSED">Fechada</SelectItem>
-            </SelectContent>
-          </Select>
-
-          {(params.query || params.status?.length) && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setSearchInput('')
-                onParamsChange({ page: 1, limit: params.limit })
-              }}
-              className="h-9 text-xs"
-            >
-              Limpar filtros
-            </Button>
-          )}
-        </div>
-      </div>
+      <ConversationsTableToolbar
+        params={params}
+        onParamsChange={onParamsChange}
+      />
 
       <div className="overflow-hidden rounded-md border">
         <Table>

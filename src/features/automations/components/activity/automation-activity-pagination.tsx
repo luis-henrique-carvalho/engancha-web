@@ -1,18 +1,12 @@
 import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  DoubleArrowLeftIcon,
-  DoubleArrowRightIcon,
-} from '@radix-ui/react-icons'
-import { Button } from '@/components/ui/button'
-import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { cn, getPageNumbers } from '@/lib/utils'
+import { cn } from '@/lib/utils'
+import { AutomationActivityPageButtons } from './automation-activity-page-buttons'
 
 export interface AutomationActivityPaginationProps {
   page: number
@@ -35,7 +29,6 @@ export function AutomationActivityPagination({
 }: AutomationActivityPaginationProps) {
   const currentPage = Math.max(1, page)
   const safeTotalPages = Math.max(1, totalPages)
-  const pageNumbers = getPageNumbers(currentPage, safeTotalPages)
 
   return (
     <div
@@ -88,72 +81,11 @@ export function AutomationActivityPagination({
           Página {currentPage} de {safeTotalPages} ({total} itens)
         </div>
 
-        <div className="flex items-center space-x-1.5">
-          <Button
-            variant="outline"
-            className="size-8 p-0 @max-md/content:hidden"
-            onClick={() => onPageChange(1)}
-            disabled={currentPage <= 1}
-            data-testid="activity-first-page-button"
-          >
-            <span className="sr-only">Primeira página</span>
-            <DoubleArrowLeftIcon className="h-4 w-4" />
-          </Button>
-
-          <Button
-            variant="outline"
-            className="size-8 p-0"
-            onClick={() => onPageChange(currentPage - 1)}
-            disabled={currentPage <= 1}
-            data-testid="activity-prev-page-button"
-          >
-            <span className="sr-only">Página anterior</span>
-            <ChevronLeftIcon className="h-4 w-4" />
-          </Button>
-
-          {pageNumbers.map((pageNumber, index) => (
-            <div
-              key={`${pageNumber}-${index}`}
-              className="flex items-center"
-            >
-              {pageNumber === '...' ? (
-                <span className="px-1 text-xs text-muted-foreground">...</span>
-              ) : (
-                <Button
-                  variant={currentPage === pageNumber ? 'default' : 'outline'}
-                  className="h-8 min-w-8 px-2 text-xs"
-                  onClick={() => onPageChange(pageNumber as number)}
-                  data-testid={`activity-page-${pageNumber}-button`}
-                >
-                  <span className="sr-only">Página {pageNumber}</span>
-                  {pageNumber}
-                </Button>
-              )}
-            </div>
-          ))}
-
-          <Button
-            variant="outline"
-            className="size-8 p-0"
-            onClick={() => onPageChange(currentPage + 1)}
-            disabled={currentPage >= safeTotalPages}
-            data-testid="activity-next-page-button"
-          >
-            <span className="sr-only">Próxima página</span>
-            <ChevronRightIcon className="h-4 w-4" />
-          </Button>
-
-          <Button
-            variant="outline"
-            className="size-8 p-0 @max-md/content:hidden"
-            onClick={() => onPageChange(safeTotalPages)}
-            disabled={currentPage >= safeTotalPages}
-            data-testid="activity-last-page-button"
-          >
-            <span className="sr-only">Última página</span>
-            <DoubleArrowRightIcon className="h-4 w-4" />
-          </Button>
-        </div>
+        <AutomationActivityPageButtons
+          currentPage={currentPage}
+          safeTotalPages={safeTotalPages}
+          onPageChange={onPageChange}
+        />
       </div>
     </div>
   )

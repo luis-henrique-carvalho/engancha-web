@@ -1,10 +1,8 @@
-import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import type { AutomationStatus } from '@/types/api'
 import type { ListAutomationsParams } from '@/features/automations/services/automations-api'
 import { WorkspaceShell } from '@/features/workspaces/workspace-shell'
-import { AutomationsHeader, CreateAutomationDialog } from '@/features/automations/components'
-import { AutomationsListView } from '@/features/automations/views/automations-list-view'
+import { AutomationsHeader } from '@/features/automations/components'
 
 function selectedStatuses(value: unknown): AutomationStatus[] | undefined {
   const allowed: AutomationStatus[] = ['ACTIVE', 'DRAFT', 'PAUSED', 'ARCHIVED']
@@ -26,6 +24,8 @@ export const Route = createFileRoute('/_authenticated/automations/')({
   component: AutomationsIndexPage,
 })
 
+import { AutomationsPageContent } from '@/features/automations/components/automations-page-content'
+
 function AutomationsIndexPage() {
   const params = Route.useSearch()
   const navigate = Route.useNavigate()
@@ -43,43 +43,5 @@ function AutomationsIndexPage() {
         />
       )}
     </WorkspaceShell>
-  )
-}
-
-function AutomationsPageContent({
-  workspaceId,
-  params,
-  navigate,
-}: {
-  workspaceId: string
-  params: ListAutomationsParams
-  navigate: (opts: any) => Promise<void>
-}) {
-  const [createDialogOpen, setCreateDialogOpen] = useState(false)
-
-  return (
-    <>
-      <AutomationsListView
-        workspaceId={workspaceId}
-        params={params}
-        onParamsChange={(next) =>
-          void navigate({
-            search: {
-              page: next.page,
-              limit: next.limit,
-              query: next.query,
-              status: next.status,
-            },
-          })
-        }
-        onCreateClick={() => setCreateDialogOpen(true)}
-      />
-
-      <CreateAutomationDialog
-        workspaceId={workspaceId}
-        open={createDialogOpen}
-        onOpenChange={setCreateDialogOpen}
-      />
-    </>
   )
 }

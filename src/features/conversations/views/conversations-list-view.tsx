@@ -1,22 +1,9 @@
-import { Header } from '@/components/layout/header'
-import { Search } from '@/components/search'
-import { ThemeSwitch } from '@/components/theme-switch'
-import { ConfigDrawer } from '@/components/config-drawer'
-import { ProfileDropdown } from '@/components/profile-dropdown'
 import type { ListConversationsParams } from '../services/conversations-api'
 import { useConversationsList } from '../hooks/use-conversations-list'
 import { ConversationsTable } from '../components/conversations-table'
+import { ConversationsHeader } from '../components/conversations-list-header'
 
-export function ConversationsHeader() {
-  return (
-    <Header fixed>
-      <Search className="me-auto" />
-      <ThemeSwitch />
-      <ConfigDrawer />
-      <ProfileDropdown />
-    </Header>
-  )
-}
+export { ConversationsHeader }
 
 type Props = {
   workspaceId: string
