@@ -1,0 +1,12 @@
+**/node_modules/
+**/dist/
+**/.output/
+**/.tanstack/
+**/coverage/
+.env
+/graphify-out
+/.worktrees/
+**/graphify-out
+**/__screenshots__/
+**/.vitest-attachments/
+/apps/api/generated
