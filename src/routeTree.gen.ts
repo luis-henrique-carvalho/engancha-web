@@ -25,6 +25,7 @@ import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-passw
 import { Route as AuthVerifyEmailRouteImport } from './routes/auth/verify-email'
 import { Route as AuthenticatedAutomationsIndexRouteImport } from './routes/_authenticated/automations/index'
 import { Route as AuthenticatedAutomationsAutomationIdRouteRouteImport } from './routes/_authenticated/automations/$automationId/route'
+import { Route as AuthenticatedAutomationsCreateRouteImport } from './routes/_authenticated/automations/create'
 import { Route as AuthenticatedConversationsIndexRouteImport } from './routes/_authenticated/conversations/index'
 import { Route as AuthenticatedConversationsConversationIdRouteImport } from './routes/_authenticated/conversations/$conversationId'
 import { Route as OauthProviderCallbackRouteImport } from './routes/oauth/$provider/callback'
@@ -119,6 +120,12 @@ const AuthenticatedAutomationsAutomationIdRouteRoute =
   AuthenticatedAutomationsAutomationIdRouteRouteImport.update({
     id: '/automations/$automationId',
     path: '/automations/$automationId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAutomationsCreateRoute =
+  AuthenticatedAutomationsCreateRouteImport.update({
+    id: '/automations/create',
+    path: '/automations/create',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedConversationsIndexRoute =
@@ -219,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/automations/$automationId': typeof AuthenticatedAutomationsAutomationIdRouteRouteWithChildren
+  '/automations/create': typeof AuthenticatedAutomationsCreateRoute
   '/conversations/$conversationId': typeof AuthenticatedConversationsConversationIdRoute
   '/oauth/$provider/callback': typeof OauthProviderCallbackRoute
   '/oauth/instagram/callback': typeof OauthInstagramCallbackRoute
@@ -249,6 +257,7 @@ export interface FileRoutesByTo {
   '/auth/register': typeof AuthRegisterRoute
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
+  '/automations/create': typeof AuthenticatedAutomationsCreateRoute
   '/conversations/$conversationId': typeof AuthenticatedConversationsConversationIdRoute
   '/oauth/$provider/callback': typeof OauthProviderCallbackRoute
   '/oauth/instagram/callback': typeof OauthInstagramCallbackRoute
@@ -282,6 +291,7 @@ export interface FileRoutesById {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify-email': typeof AuthVerifyEmailRoute
   '/_authenticated/automations/$automationId': typeof AuthenticatedAutomationsAutomationIdRouteRouteWithChildren
+  '/_authenticated/automations/create': typeof AuthenticatedAutomationsCreateRoute
   '/_authenticated/conversations/$conversationId': typeof AuthenticatedConversationsConversationIdRoute
   '/oauth/$provider/callback': typeof OauthProviderCallbackRoute
   '/oauth/instagram/callback': typeof OauthInstagramCallbackRoute
@@ -315,6 +325,7 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/verify-email'
     | '/automations/$automationId'
+    | '/automations/create'
     | '/conversations/$conversationId'
     | '/oauth/$provider/callback'
     | '/oauth/instagram/callback'
@@ -345,6 +356,7 @@ export interface FileRouteTypes {
     | '/auth/register'
     | '/auth/reset-password'
     | '/auth/verify-email'
+    | '/automations/create'
     | '/conversations/$conversationId'
     | '/oauth/$provider/callback'
     | '/oauth/instagram/callback'
@@ -377,6 +389,7 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/verify-email'
     | '/_authenticated/automations/$automationId'
+    | '/_authenticated/automations/create'
     | '/_authenticated/conversations/$conversationId'
     | '/oauth/$provider/callback'
     | '/oauth/instagram/callback'
@@ -515,6 +528,13 @@ declare module '@tanstack/react-router' {
       path: '/automations/$automationId'
       fullPath: '/automations/$automationId'
       preLoaderRoute: typeof AuthenticatedAutomationsAutomationIdRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/automations/create': {
+      id: '/_authenticated/automations/create'
+      path: '/automations/create'
+      fullPath: '/automations/create'
+      preLoaderRoute: typeof AuthenticatedAutomationsCreateRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/conversations/': {
@@ -667,6 +687,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedUsersRoute: typeof AuthenticatedUsersRoute
   AuthenticatedWorkspaceRoute: typeof AuthenticatedWorkspaceRoute
   AuthenticatedAutomationsAutomationIdRouteRoute: typeof AuthenticatedAutomationsAutomationIdRouteRouteWithChildren
+  AuthenticatedAutomationsCreateRoute: typeof AuthenticatedAutomationsCreateRoute
   AuthenticatedConversationsConversationIdRoute: typeof AuthenticatedConversationsConversationIdRoute
   AuthenticatedAutomationsIndexRoute: typeof AuthenticatedAutomationsIndexRoute
   AuthenticatedConversationsIndexRoute: typeof AuthenticatedConversationsIndexRoute
@@ -680,6 +701,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedWorkspaceRoute: AuthenticatedWorkspaceRoute,
   AuthenticatedAutomationsAutomationIdRouteRoute:
     AuthenticatedAutomationsAutomationIdRouteRouteWithChildren,
+  AuthenticatedAutomationsCreateRoute: AuthenticatedAutomationsCreateRoute,
   AuthenticatedConversationsConversationIdRoute:
     AuthenticatedConversationsConversationIdRoute,
   AuthenticatedAutomationsIndexRoute: AuthenticatedAutomationsIndexRoute,

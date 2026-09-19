@@ -22,7 +22,7 @@ export function useCreateAutomationDialog(
 
   const { data: mediaData, isLoading: loadingMedia } = useQuery({
     queryKey: ['channels-media', formState.selectedConnectionId],
-    queryFn: () => ChannelsApi.listEligibleMedia(formState.selectedConnectionId, 25),
+    queryFn: () => ChannelsApi.listEligibleMedia(formState.selectedConnectionId, 50),
     enabled: Boolean(formState.selectedConnectionId),
   })
 
@@ -44,14 +44,23 @@ export function useCreateAutomationDialog(
       toast.error('Selecione uma conta e uma publicação.')
       return
     }
-    if (formState.step === 2 && (!formState.name.trim() || !formState.keywordsText.trim())) {
-      toast.error('Preencha o nome e ao menos uma palavra-chave.')
-      return
-    }
-    formState.setStep((s) => (s + 1) as 1 | 2 | 3)
+    formState.setStep(2)
   }
 
   const handleCreate = () => {
+    if (!formState.name.trim()) {
+      toast.error('Informe o nome da automação.')
+      return
+    }
+    if (formState.keywords.length === 0) {
+      toast.error('Adicione ao menos uma palavra-chave de gatilho.')
+      return
+    }
+    if (!formState.publicReplyText.trim() && !formState.privateReplyText.trim()) {
+      toast.error('Preencha ao menos uma resposta (pública ou privada).')
+      return
+    }
+
     const payload = formState.buildPayload()
     if (!payload) {
       toast.error('Preencha todos os campos obrigatórios.')

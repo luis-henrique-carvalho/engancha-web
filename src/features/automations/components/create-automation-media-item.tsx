@@ -1,6 +1,7 @@
-import { Image as ImageIcon, Video } from 'lucide-react'
+import { Check, Image as ImageIcon, Video } from 'lucide-react'
 import type { ChannelMedia } from '@/types/api'
 import { Badge } from '@/components/ui/badge'
+import { cn } from '@/lib/utils'
 
 interface CreateAutomationMediaItemProps {
   media: ChannelMedia
@@ -14,37 +15,63 @@ export function CreateAutomationMediaItem({
   onSelect,
 }: CreateAutomationMediaItemProps) {
   return (
-    <div
+    <button
+      type="button"
       onClick={onSelect}
-      className={`group relative cursor-pointer rounded-lg border p-2 transition-all hover:border-primary ${
-        isSelected ? 'border-primary ring-2 ring-primary/20 bg-primary/5' : ''
-      }`}
+      className={cn(
+        'group relative flex flex-col overflow-hidden rounded-xl border text-left transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-primary',
+        isSelected
+          ? 'border-primary bg-primary/5 ring-2 ring-primary shadow-sm'
+          : 'border-border/70 bg-card hover:border-primary/50 hover:bg-accent/40',
+      )}
     >
-      <div className="aspect-square w-full rounded bg-muted overflow-hidden flex items-center justify-center relative">
+      <div className="relative aspect-square w-full overflow-hidden bg-muted">
         {media.thumbnailUrl ? (
           <img
             src={media.thumbnailUrl}
-            alt={media.caption}
-            className="h-full w-full object-cover"
+            alt={media.caption || 'Mídia do canal'}
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
           />
-        ) : media.mediaType === 'REEL' ? (
-          <Video className="size-8 text-muted-foreground" />
         ) : (
-          <ImageIcon className="size-8 text-muted-foreground" />
+          <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+            {media.mediaType === 'REEL' ? (
+              <Video className="size-8" />
+            ) : (
+              <ImageIcon className="size-8" />
+            )}
+          </div>
         )}
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+
+        <div
+          className={cn(
+            'absolute top-2 right-2 flex size-6 items-center justify-center rounded-full border transition-all',
+            isSelected
+              ? 'border-primary bg-primary text-primary-foreground shadow-sm'
+              : 'border-white/50 bg-black/40 text-transparent opacity-0 group-hover:opacity-100',
+          )}
+        >
+          <Check className="size-3.5 stroke-[3]" />
+        </div>
+
         <Badge
           variant="secondary"
-          className="absolute bottom-1 right-1 text-[10px] px-1 py-0"
+          className="absolute bottom-2 left-2 text-[10px] font-semibold tracking-wider uppercase backdrop-blur-md bg-background/80"
         >
           {media.mediaType}
         </Badge>
       </div>
-      <p
-        className="mt-1 text-xs text-muted-foreground line-clamp-2"
-        title={media.caption}
-      >
-        {media.caption || 'Sem legenda'}
-      </p>
-    </div>
+
+      <div className="p-2.5">
+        <p
+          className="text-xs font-medium text-foreground line-clamp-2 leading-snug"
+          title={media.caption}
+        >
+          {media.caption || 'Sem legenda'}
+        </p>
+      </div>
+    </button>
   )
 }

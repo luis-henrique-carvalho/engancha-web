@@ -1,4 +1,4 @@
-import type { AutomationActionConfig } from '@engancha/contracts'
+import type { AutomationAction } from '@engancha/contracts'
 import { Link as LinkIcon, Mail, MessageSquare, Send, Tag } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -12,7 +12,7 @@ import { FinalActionCardContent } from './summary-final-action-card-content'
 import { SummaryCard } from './summary-card'
 
 export interface SummaryActionCardsProps {
-  actions: AutomationActionConfig[]
+  actions: AutomationAction[]
   onNavigateStep?: (stepId: AutomationStepId) => void
 }
 

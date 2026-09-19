@@ -10,7 +10,6 @@ import {
 import { useCreateAutomationDialog } from '../hooks/use-create-automation-dialog'
 import { CreateAutomationStep1 } from './create-automation-step-1'
 import { CreateAutomationStep2 } from './create-automation-step-2'
-import { CreateAutomationStep3 } from './create-automation-step-3'
 import { CreateAutomationFooter } from './create-automation-footer'
 
 interface CreateAutomationDialogProps {
@@ -38,8 +37,8 @@ export function CreateAutomationDialog({
     setSelectedMedia,
     name,
     setName,
-    keywordsText,
-    setKeywordsText,
+    keywords,
+    setKeywords,
     publicReplyText,
     setPublicReplyText,
     privateReplyText,
@@ -70,17 +69,17 @@ export function CreateAutomationDialog({
       }}
     >
       {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{dialogTitle}</DialogTitle>
           <DialogDescription>
-            {step === 1 && 'Etapa 1: Selecione a conta conectada e o conteúdo alvo.'}
-            {step === 2 && 'Etapa 2: Defina as palavras-chave de gatilho.'}
-            {step === 3 && 'Etapa 3: Configure as respostas pública e privada.'}
+            {step === 1
+              ? 'Etapa 1: Selecione a conta conectada e o conteúdo alvo.'
+              : 'Etapa 2: Configure a identificação, palavras-chave e respostas.'}
           </DialogDescription>
         </DialogHeader>
 
-        {step === 1 && (
+        {step === 1 ? (
           <CreateAutomationStep1
             channels={channels}
             loadingChannels={loadingChannels}
@@ -94,19 +93,12 @@ export function CreateAutomationDialog({
             selectedMedia={selectedMedia}
             onSelectMedia={setSelectedMedia}
           />
-        )}
-
-        {step === 2 && (
+        ) : (
           <CreateAutomationStep2
             name={name}
             onNameChange={setName}
-            keywordsText={keywordsText}
-            onKeywordsChange={setKeywordsText}
-          />
-        )}
-
-        {step === 3 && (
-          <CreateAutomationStep3
+            keywords={keywords}
+            onKeywordsChange={setKeywords}
             publicReplyText={publicReplyText}
             onPublicReplyChange={setPublicReplyText}
             privateReplyText={privateReplyText}
@@ -117,7 +109,7 @@ export function CreateAutomationDialog({
         <CreateAutomationFooter
           step={step}
           isPending={createMutation.isPending}
-          onBack={() => setStep((s) => (s - 1) as 1 | 2 | 3)}
+          onBack={() => setStep(1)}
           onNext={handleNextStep}
           onCreate={handleCreate}
         />
